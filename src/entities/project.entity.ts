@@ -10,10 +10,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Client } from './client.entity';
-import { ClientStakeholder } from './clientStakeholder.entity';
-import { User } from './user.entity';
-import { Interview } from './discoveryInterview.entity';
+import { ClientStakeholder } from './ClientStakeholder.entity';
+import { User } from './User.entity';
+import { Interview } from './DiscoveryInterview.entity';
+import { Client } from './Client.entity';
 
 @Entity('project')
 export class Project {

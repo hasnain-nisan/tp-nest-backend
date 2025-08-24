@@ -26,6 +26,7 @@ export class User {
 
   @Column('jsonb', { name: 'access_scopes', nullable: true })
   accessScopes: {
+    canManageUsers?: boolean;
     canManageClients?: boolean;
     canManageStakeholders?: boolean;
     canManageProjects?: boolean;

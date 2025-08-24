@@ -7,10 +7,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from './user.entity';
-import { ClientStakeholder } from './clientStakeholder.entity';
-import { Project } from './project.entity';
-import { Interview } from './discoveryInterview.entity';
+import { User } from './User.entity';
+import { ClientStakeholder } from './ClientStakeholder.entity';
+import { Project } from './Project.entity';
+import { Interview } from './DiscoveryInterview.entity';
 
 @Entity('client')
 export class Client {
@@ -23,11 +23,11 @@ export class Client {
   @Column({ name: 'client_code', unique: true })
   clientCode: string;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User)
   @Column({ name: 'created_by' })
   createdBy: User;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User)
   @Column({ name: 'updated_by' })
   updatedBy: User;
 

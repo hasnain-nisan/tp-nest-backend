@@ -7,10 +7,10 @@ import {
   UpdateDateColumn,
   JoinColumn,
 } from 'typeorm';
-import { Client } from './client.entity';
-import { ClientStakeholder } from './clientStakeholder.entity';
-import { Project } from './project.entity';
-import { User } from './user.entity';
+import { Client } from './Client.entity';
+import { ClientStakeholder } from './ClientStakeholder.entity';
+import { Project } from './Project.entity';
+import { User } from './User.entity';
 
 @Entity('discovery_interview')
 export class Interview {
@@ -26,14 +26,14 @@ export class Interview {
   @Column({ name: 'gdrive_id', nullable: true })
   gDriveId: string;
 
-  @Column({ name: 'request_distillation', default: false })
-  requestDistillation: boolean;
+  @Column({ name: 'request_distillation', nullable: true })
+  requestDistillation: string;
 
-  @Column({ name: 'request_coaching', default: false })
-  requestCoaching: boolean;
+  @Column({ name: 'request_coaching', nullable: true })
+  requestCoaching: string;
 
-  @Column({ name: 'request_user_stories', default: false })
-  requestUserStories: boolean;
+  @Column({ name: 'request_user_stories', nullable: true })
+  requestUserStories: string;
 
   @ManyToOne(() => Client)
   @JoinColumn({ name: 'client_id' })

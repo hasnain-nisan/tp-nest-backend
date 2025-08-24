@@ -9,10 +9,10 @@ import {
   UpdateDateColumn,
   JoinColumn,
 } from 'typeorm';
-import { Client } from './client.entity';
-import { User } from './user.entity';
-import { Project } from './project.entity';
-import { Interview } from './discoveryInterview.entity';
+import { Client } from './Client.entity';
+import { User } from './User.entity';
+import { Project } from './Project.entity';
+import { Interview } from '../entities/DiscoveryInterview.entity';
 
 @Entity('client_stakeholder')
 export class ClientStakeholder {
