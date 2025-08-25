@@ -1,174 +1,268 @@
 # Database Structure Documentation
 
 ## Overview
+This database supports **client management**, **stakeholder tracking**, **project management**, and **discovery interview scheduling**, with **full auditability** and **granular access control**.  
+It’s composed of five main entities and one junction table, designed for scalability, integrity, and traceability.
 
-This document provides a detailed explanation of the database structure for a client management and discovery interview system. The database consists of five main entities that work together to manage clients, their stakeholders, projects, and discovery interviews.
+---
 
-## Core Entities Overview
+## Core Entities
 
-### 1. User Entity
-
-**Purpose:** Central authentication and authorization entity
-
-**Key Features:**
-- Uses UUID as primary key for better security and scalability
-- Role-based access control with `SuperAdmin` and `Admin` roles
-- Flexible permission system using JSONB `accessScopes` for granular permissions
-- Serves as the audit trail source for all other entities
-
-**Fields:**
-- `id` (UUID, Primary Key)
-- `email` (Unique)
-- `password`
-- `role` (Enum: SuperAdmin | Admin)
-- `accessScopes` (JSONB)
-- `createdAt` (Timestamp)
-- `updatedAt` (Timestamp)
-
-### 2. Client Entity
-
-**Purpose:** Represents client organizations
+### **1. User**
+**Purpose:** Authentication, authorization, and system-wide audit source.
 
 **Key Features:**
-- Unique `clientCode` for business identification
-- Soft deletion with `isDeleted` flag
-- Full audit trail with `createdBy` and `updatedBy` foreign keys to User
-- Parent entity for stakeholders, projects, and interviews
+- UUID primary key for global uniqueness.
+- Enum `role` supports system-level roles (`SuperAdmin`, `Admin`).
+- `accessScopes` JSONB for granular feature-level permissions.
+- Self-referential `createdBy` / `updatedBy` for tracking by other users.
 
 **Fields:**
-- `id` (UUID, Primary Key)
-- `name`
-- `clientCode` (Unique)
-- `createdBy` (Foreign Key → User)
-- `updatedBy` (Foreign Key → User)
-- `createdAt` (Timestamp)
-- `updatedAt` (Timestamp)
-- `isDeleted` (Boolean, Default: false)
+| Field          | Type      | Constraints / Notes                                   |
+|----------------|-----------|------------------------------------------------------|
+| id             | UUID      | PK                                                   |
+| email          | varchar   | unique, **not null**                                 |
+| password       | varchar   | **not null**, excluded from serialization            |
+| role           | enum      | `SuperAdmin` or `Admin`, **not null**                 |
+| accessScopes   | JSONB     | nullable, stores boolean permission flags             |
+| created_by     | UUID      | nullable, FK → User                                  |
+| updated_by     | UUID      | nullable, FK → User                                  |
+| created_at     | timestamp | auto-generated                                       |
+| updated_at     | timestamp | auto-generated                                       |
+| is_deleted     | boolean   | default: `false`                                      |
 
-### 3. ClientStakeholder Entity
+---
 
-**Purpose:** Represents individual contacts within client organizations
+### **2. Client**
+**Purpose:** Represents a client organization.
 
 **Key Features:**
-- Belongs to exactly one client (Many-to-One relationship)
-- Can participate in multiple projects (Many-to-Many relationship)
-- Optional contact information (email, phone)
+- Unique `clientCode` for business reference.
+- Soft-delete with `is_deleted`.
+- Parent for `ClientStakeholder`, `Project`, and `Interview`.
 
 **Fields:**
-- `id` (UUID, Primary Key)
-- `name`
-- `email` (Nullable)
-- `phone` (Nullable)
-- `clientId` (Foreign Key → Client)
-- `createdBy` (Foreign Key → User)
-- `updatedBy` (Foreign Key → User)
-- `createdAt` (Timestamp)
-- `updatedAt` (Timestamp)
-- `isDeleted` (Boolean, Default: false)
+| Field        | Type      | Constraints / Notes     |
+|--------------|-----------|-------------------------|
+| id           | UUID      | PK                      |
+| name         | varchar   | **not null**            |
+| client_code  | varchar   | unique, **not null**    |
+| created_by   | UUID      | nullable, FK → User     |
+| updated_by   | UUID      | nullable, FK → User     |
+| created_at   | timestamp | auto-generated          |
+| updated_at   | timestamp | auto-generated          |
+| is_deleted   | boolean   | default: `false`        |
 
-### 4. Project Entity
+---
 
-**Purpose:** Represents specific projects for clients
+### **3. ClientStakeholder**
+**Purpose:** A contact person working for a Client.
 
 **Key Features:**
-- Belongs to exactly one client
-- Can involve multiple stakeholders through a many-to-many relationship
-- Uses a junction table `project_stakeholders` for the M:M relationship
-- Can have multiple discovery interviews associated with it
+- Belongs to exactly **one** Client.
+- May be linked to multiple Projects (M:M through `project_stakeholders`).
+- Contact info is optional.
 
 **Fields:**
-- `id` (UUID, Primary Key)
-- `name`
-- `clientTeam` (Nullable)
-- `clientId` (Foreign Key → Client)
-- `createdBy` (Foreign Key → User)
-- `updatedBy` (Foreign Key → User)
-- `createdAt` (Timestamp)
-- `updatedAt` (Timestamp)
-- `isDeleted` (Boolean, Default: false)
+| Field        | Type      | Constraints / Notes     |
+|--------------|-----------|-------------------------|
+| id           | UUID      | PK                      |
+| name         | varchar   | **not null**            |
+| email        | varchar   | nullable                |
+| phone        | varchar   | nullable                |
+| client_id    | UUID      | FK → Client, **not null** |
+| created_by   | UUID      | nullable, FK → User     |
+| updated_by   | UUID      | nullable, FK → User     |
+| created_at   | timestamp | auto-generated          |
+| updated_at   | timestamp | auto-generated          |
+| is_deleted   | boolean   | default: `false`        |
 
-### 5. Interview (DiscoveryInterview) Entity
+---
 
-**Purpose:** Records discovery interviews conducted
+### **4. Project**
+**Purpose:** Represents a project for a Client.
 
 **Key Features:**
-- Links to client, and project (all required relationships)
-- Stores Google Drive integration with `gDriveId`
-- Captures different types of requests (distillation, coaching, user stories)
-- Timestamp for scheduling/tracking interview dates
+- Belongs to a single Client.
+- Can link to multiple Stakeholders via `project_stakeholders` M:M join.
+- Has multiple associated Interviews.
 
 **Fields:**
-- `id` (UUID, Primary Key)
-- `name`
-- `date` (Timestamp)
-- `gDriveId` (Nullable)
-- `requestDistillation` (Nullable)
-- `requestCoaching` (Nullable)
-- `requestUserStories` (Nullable)
-- `stakeholderId` (Foreign Key → ClientStakeholder)
-- `projectId` (Foreign Key → Project)
-- `createdBy` (Foreign Key → User)
-- `updatedBy` (Foreign Key → User)
-- `createdAt` (Timestamp)
-- `updatedAt` (Timestamp)
-- `isDeleted` (Boolean, Default: false)
+| Field        | Type      | Constraints / Notes     |
+|--------------|-----------|-------------------------|
+| id           | UUID      | PK                      |
+| name         | varchar   | **not null**            |
+| client_team  | varchar   | nullable                |
+| client_id    | UUID      | FK → Client, **not null**|
+| created_by   | UUID      | nullable, FK → User     |
+| updated_by   | UUID      | nullable, FK → User     |
+| created_at   | timestamp | auto-generated          |
+| updated_at   | timestamp | auto-generated          |
+| is_deleted   | boolean   | default: `false`        |
 
-## Relationship Analysis
+---
 
-### One-to-Many Relationships
+### **5. DiscoveryInterview**
+**Purpose:** Represents interviews conducted for a Client, linked to a specific Project.
 
-1. **Client → ClientStakeholder:** One client has many stakeholders
-2. **Client → Project:** One client has many projects
-3. **Client → Interview:** One client has many interviews
-4. **Project → Interview:** One project can have many interviews
+**Key Features:**
+- Required link to both `Client` and `Project`.
+- Optional Google Drive ID and request type flags.
+- Tracks interview date.
 
-### Many-to-Many Relationship
+**Fields:**
+| Field                | Type      | Constraints / Notes     |
+|----------------------|-----------|-------------------------|
+| id                   | UUID      | PK                      |
+| name                 | varchar   | **not null**            |
+| date                 | timestamp | **not null**            |
+| gdrive_id            | varchar   | nullable                |
+| request_distillation | varchar   | nullable                |
+| request_coaching     | varchar   | nullable                |
+| request_user_stories | varchar   | nullable                |
+| client_id            | UUID      | FK → Client, **not null**|
+| project_id           | UUID      | FK → Project, **not null**|
+| created_by           | UUID      | nullable, FK → User     |
+| updated_by           | UUID      | nullable, FK → User     |
+| created_at           | timestamp | auto-generated          |
+| updated_at           | timestamp | auto-generated          |
+| is_deleted           | boolean   | default: `false`        |
 
-**Project ↔ ClientStakeholder:** Projects can involve multiple stakeholders, and stakeholders can work on multiple projects
-- Implemented via junction table `project_stakeholders`
+---
 
-### Audit Trail Pattern
+### **6. project_stakeholders** (Junction Table)
+**Purpose:** Links Projects to ClientStakeholders (M:M).
 
-All main entities (except User) have `createdBy` and `updatedBy` foreign keys pointing to the User entity, providing comprehensive audit logging.
+**Fields:**
+| Field          | Type  | Constraints / Notes |
+|----------------|-------|---------------------|
+| project_id     | UUID  | FK → Project        |
+| stakeholder_id | UUID  | FK → ClientStakeholder |
+
+---
+
+## Relationship Summary
+
+**One-to-Many**
+- Client → ClientStakeholder  
+- Client → Project  
+- Client → DiscoveryInterview  
+- Project → DiscoveryInterview  
+
+**Many-to-Many**
+- Project ↔ ClientStakeholder (via `project_stakeholders`)
+
+**Audit Trail**
+- Every main entity except has `created_by` and `updated_by` → `User`.
+
+---
 
 ## Design Strengths
+1. **Strong auditability** through `created_by` and `updated_by`.
+2. **Soft-deletion** everywhere for reversible data handling.
+3. **Granular permissions** via `accessScopes`.
+4. **UUID keys** for distributed safety and non-guessable IDs.
+5. **Clear workflow mapping** (client → project → interview).
 
-1. **Comprehensive Audit Trail:** Every entity tracks who created and last updated it
-2. **Soft Deletion:** Uses `isDeleted` flags instead of hard deletion for data preservation
-3. **Flexible Permissions:** JSONB `accessScopes` allows for granular permission management
-4. **UUID Primary Keys:** Better for distributed systems and security
-5. **Clear Business Logic:** The relationships reflect real-world business scenarios
+---
 
-## Business Logic Flow
+## DBML Schema
 
-1. **User** logs in with role-based permissions
-2. **Client** organizations are created and managed
-3. **ClientStakeholders** are added to represent contacts within each client
-4. **Projects** are created for clients with assigned stakeholders
-5. **Discovery Interviews** are scheduled and conducted, linking all three: client, project, and specific stakeholder
+[TP Admin Database Diagram](https://dbdiagram.io/d/TP-admin-db-68ac81791e7a611967813959)
 
-## Use Cases
+```dbml
+// DBML for your given entities with nullability
+// Docs: https://dbml.dbdiagram.io/docs
 
-This database structure effectively supports a consulting or service-based business that needs to:
+Table user {
+  id uuid [primary key]
+  email varchar [unique] // not null
+  password varchar // not null
+  role varchar // enum: SuperAdmin | Admin, not null
+  access_scopes jsonb [null]
+  created_by uuid [null]
+  updated_by uuid [null]
+  created_at timestamp
+  updated_at timestamp
+  is_deleted boolean // default: false
+}
 
-- Manage client relationships
-- Track stakeholder interactions
-- Organize projects with multiple stakeholder involvement
-- Conduct discovery interviews with comprehensive context
-- Maintain full audit trails for compliance and accountability
-- Implement flexible access control for different user roles
+Table client {
+  id uuid [primary key]
+  name varchar // not null
+  client_code varchar [unique] // not null
+  created_by uuid [null]
+  updated_by uuid [null]
+  created_at timestamp
+  updated_at timestamp
+  is_deleted boolean // default: false
+}
 
-## Technical Implementation
+Table client_stakeholder {
+  id uuid [primary key]
+  name varchar // not null
+  email varchar [null]
+  phone varchar [null]
+  client_id uuid // not null
+  created_by uuid [null]
+  updated_by uuid [null]
+  created_at timestamp
+  updated_at timestamp
+  is_deleted boolean // default: false
+}
 
-The system is implemented using TypeORM with the following key features:
+Table project {
+  id uuid [primary key]
+  name varchar // not null
+  client_team varchar [null]
+  client_id uuid // not null
+  created_by uuid [null]
+  updated_by uuid [null]
+  created_at timestamp
+  updated_at timestamp
+  is_deleted boolean // default: false
+}
 
-- **UUID Primary Keys** for all entities
-- **Enum Types** for role-based access control
-- **JSONB Fields** for flexible permission structures
-- **Junction Tables** for many-to-many relationships
-- **Soft Delete Pattern** for data preservation
-- **Comprehensive Foreign Key Relationships** for data integrity
+Table project_stakeholders {
+  project_id uuid // not null
+  stakeholder_id uuid // not null
+}
 
-## Conclusion
+Table discovery_interview {
+  id uuid [primary key]
+  name varchar // not null
+  date timestamp // not null
+  gdrive_id varchar [null]
+  request_distillation varchar [null]
+  request_coaching varchar [null]
+  request_user_stories varchar [null]
+  client_id uuid // not null
+  project_id uuid // not null
+  created_by uuid [null]
+  updated_by uuid [null]
+  created_at timestamp
+  updated_at timestamp
+  is_deleted boolean // default: false
+}
 
-This database design provides a robust foundation for client management and discovery interview processes, with strong emphasis on data integrity, audit trails, and flexible permission management. The structure supports complex business scenarios while maintaining clean, normalized data relationships.
+// Relationships for many-to-many
+Ref: project_stakeholders.project_id > project.id
+Ref: project_stakeholders.stakeholder_id > client_stakeholder.id
+
+// One-to-many / Many-to-one relationships
+Ref: client_stakeholder.client_id > client.id
+Ref: project.client_id > client.id
+Ref: discovery_interview.client_id > client.id
+Ref: discovery_interview.project_id > project.id
+
+// Self-references for created_by / updated_by
+Ref: user.created_by > user.id
+Ref: user.updated_by > user.id
+Ref: client.created_by > user.id
+Ref: client.updated_by > user.id
+Ref: client_stakeholder.created_by > user.id
+Ref: client_stakeholder.updated_by > user.id
+Ref: project.created_by > user.id
+Ref: project.updated_by > user.id
+Ref: discovery_interview.created_by > user.id
+Ref: discovery_interview.updated_by > user.id
