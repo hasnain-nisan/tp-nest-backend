@@ -5,6 +5,8 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity('user')
@@ -35,9 +37,20 @@ export class User {
     canManageInterviews?: boolean;
   };
 
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'created_by' })
+  createdBy: User;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'updated_by' })
+  updatedBy: User;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @Column({ name: 'is_deleted', default: false })
+  isDeleted: boolean;
 }

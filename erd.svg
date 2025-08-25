@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
   <!-- User Entity -->
   <g>
-    <rect x="50" y="50" width="200" height="180" fill="#E3F2FD" stroke="#1976D2" stroke-width="2" rx="5"/>
+    <rect x="50" y="50" width="200" height="215" fill="#E3F2FD" stroke="#1976D2" stroke-width="2" rx="5"/>
     <rect x="50" y="50" width="200" height="30" fill="#1976D2" rx="5"/>
     <text x="150" y="70" text-anchor="middle" fill="white" font-weight="bold" font-size="14">USER</text>
     <text x="60" y="95" font-size="12" font-weight="bold">🔑 id (UUID, PK)</text>
@@ -9,8 +9,10 @@
     <text x="60" y="135" font-size="12">password</text>
     <text x="60" y="155" font-size="12">role (enum)</text>
     <text x="60" y="175" font-size="12">accessScopes (jsonb)</text>
-    <text x="60" y="195" font-size="12">createdAt</text>
-    <text x="60" y="215" font-size="12">updatedAt</text>
+    <text x="60" y="195" font-size="12">🔗 createdBy (FK) (Nullable)</text>
+    <text x="60" y="215" font-size="12">🔗 updatedBy (FK) (Nullable)</text>
+    <text x="60" y="235" font-size="12">createdAt</text>
+    <text x="60" y="255" font-size="12">updatedAt</text>
   </g>
 
   <!-- Client Entity -->
