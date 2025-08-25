@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/User.entity';
 import { LoginDto } from './dto/login.dto';
 import { IAuthService } from './interfaces/auth-service.interface';
+import { access } from 'fs';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -27,7 +28,11 @@ export class AuthService implements IAuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { email: user.email, sub: user.id };
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      accessScopes: user.accessScopes,
+    };
     return {
       access_token: this.jwtService.sign(payload),
     };
