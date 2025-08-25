@@ -6,6 +6,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { User } from './User.entity';
 import { ClientStakeholder } from './ClientStakeholder.entity';
@@ -24,11 +25,11 @@ export class Client {
   clientCode: string;
 
   @ManyToOne(() => User)
-  @Column({ name: 'created_by' })
+  @JoinColumn({ name: 'created_by' })
   createdBy: User;
 
   @ManyToOne(() => User)
-  @Column({ name: 'updated_by' })
+  @JoinColumn({ name: 'updated_by' })
   updatedBy: User;
 
   @OneToMany(() => ClientStakeholder, (stakeholder) => stakeholder.client)
