@@ -26,7 +26,7 @@ export class AccessControlGuard implements CanActivate {
       .getRequest<Request>() as RequestWithUser;
     const user = request.user;
 
-    if (!user || !Array.isArray(user.accessScopes)) {
+    if (!user || typeof user.accessScopes !== 'object') {
       throw new ForbiddenException('Access denied: missing access scopes');
     }
 

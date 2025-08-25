@@ -20,6 +20,6 @@ export class UserController {
   @Post()
   @ApiMessage('User created successfully')
   create(@Body() dto: CreateUserDto, @AuthUser() user: JwtPayload) {
-    return this.userService.create(dto);
+    return this.userService.create(dto, user);
   }
 }
