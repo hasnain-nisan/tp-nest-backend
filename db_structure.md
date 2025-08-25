@@ -52,7 +52,6 @@ This document provides a detailed explanation of the database structure for a cl
 **Key Features:**
 - Belongs to exactly one client (Many-to-One relationship)
 - Can participate in multiple projects (Many-to-Many relationship)
-- Can have multiple interviews conducted with them
 - Optional contact information (email, phone)
 
 **Fields:**
@@ -93,7 +92,7 @@ This document provides a detailed explanation of the database structure for a cl
 **Purpose:** Records discovery interviews conducted
 
 **Key Features:**
-- Links to client, stakeholder, and project (all required relationships)
+- Links to client, and project (all required relationships)
 - Stores Google Drive integration with `gDriveId`
 - Captures different types of requests (distillation, coaching, user stories)
 - Timestamp for scheduling/tracking interview dates
@@ -106,7 +105,6 @@ This document provides a detailed explanation of the database structure for a cl
 - `requestDistillation` (Nullable)
 - `requestCoaching` (Nullable)
 - `requestUserStories` (Nullable)
-- `clientId` (Foreign Key → Client)
 - `stakeholderId` (Foreign Key → ClientStakeholder)
 - `projectId` (Foreign Key → Project)
 - `createdBy` (Foreign Key → User)
@@ -122,8 +120,7 @@ This document provides a detailed explanation of the database structure for a cl
 1. **Client → ClientStakeholder:** One client has many stakeholders
 2. **Client → Project:** One client has many projects
 3. **Client → Interview:** One client has many interviews
-4. **ClientStakeholder → Interview:** One stakeholder can have many interviews
-5. **Project → Interview:** One project can have many interviews
+4. **Project → Interview:** One project can have many interviews
 
 ### Many-to-Many Relationship
 
