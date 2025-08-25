@@ -8,7 +8,6 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Client } from './Client.entity';
-import { ClientStakeholder } from './ClientStakeholder.entity';
 import { Project } from './Project.entity';
 import { User } from './User.entity';
 
@@ -38,10 +37,6 @@ export class Interview {
   @ManyToOne(() => Client)
   @JoinColumn({ name: 'client_id' })
   client: Client;
-
-  @ManyToOne(() => ClientStakeholder)
-  @JoinColumn({ name: 'stakeholder_id' })
-  stakeholder: ClientStakeholder;
 
   @ManyToOne(() => Project)
   @JoinColumn({ name: 'project_id' })

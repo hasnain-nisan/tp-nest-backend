@@ -4,7 +4,6 @@ import {
   Column,
   ManyToOne,
   ManyToMany,
-  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
@@ -12,7 +11,6 @@ import {
 import { Client } from './Client.entity';
 import { User } from './User.entity';
 import { Project } from './Project.entity';
-import { Interview } from './DiscoveryInterview.entity';
 
 @Entity('client_stakeholder')
 export class ClientStakeholder {
@@ -42,9 +40,6 @@ export class ClientStakeholder {
 
   @ManyToMany(() => Project, (project) => project.stakeholders)
   projects: Project[];
-
-  @OneToMany(() => Interview, (interview) => interview.stakeholder)
-  interviews: Interview[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
