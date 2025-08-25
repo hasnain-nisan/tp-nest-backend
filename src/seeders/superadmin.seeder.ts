@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { User } from 'src/entities/User.entity';
 import { UserRepository } from '../modules/user/user.repository';
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 

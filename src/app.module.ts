@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getTypeOrmConfig } from './config/typeorm.config';
 import { UserModule } from './modules/user/user.module';
 import { UserSeeder } from './seeders/superadmin.seeder';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserSeeder } from './seeders/superadmin.seeder';
       inject: [ConfigService],
       useFactory: getTypeOrmConfig,
     }),
+    AuthModule,
     UserModule,
   ],
   controllers: [AppController],
