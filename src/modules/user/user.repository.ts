@@ -71,4 +71,11 @@ export class UserRepository implements IUserRepository {
     const result = await this.getManagerOrRepo(manager).delete(id);
     return (result.affected ?? 0) > 0;
   }
+
+  async count(
+    options?: FindManyOptions<User>,
+    manager?: EntityManager,
+  ): Promise<number> {
+    return await this.getManagerOrRepo(manager).count(options);
+  }
 }

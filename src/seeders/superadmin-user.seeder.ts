@@ -1,15 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { UserRepository } from '../modules/user/user.repository';
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 
 @Injectable()
-export class UserSeeder implements OnApplicationBootstrap {
-  private readonly logger = new Logger(UserSeeder.name);
+export class SuperAdminUserSeeder implements OnApplicationBootstrap {
+  private readonly logger = new Logger(SuperAdminUserSeeder.name);
   constructor(
     private readonly userRepo: UserRepository,
     private readonly configService: ConfigService,
@@ -27,7 +23,10 @@ export class UserSeeder implements OnApplicationBootstrap {
     }
 
     const exists = await this.userRepo.findOne({ where: { email } });
-    if (exists) return;
+    if (exists) {
+      this.logger.log('✅ Super Admin user already seeded');
+      return;
+    }
 
     const hashed = await bcrypt.hash(password, 10);
 

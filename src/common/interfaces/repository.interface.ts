@@ -19,4 +19,5 @@ export interface IRepository<T> {
     manager?: EntityManager,
   ): Promise<T | null>;
   delete(id: string, manager?: EntityManager): Promise<boolean>;
+  count(options?: FindManyOptions<T>, manager?: EntityManager): Promise<number>;
 }

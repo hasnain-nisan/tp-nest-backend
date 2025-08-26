@@ -5,8 +5,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getTypeOrmConfig } from './config/typeorm.config';
 import { UserModule } from './modules/user/user.module';
-import { UserSeeder } from './seeders/superadmin.seeder';
+import { SuperAdminUserSeeder } from './seeders/superadmin-user.seeder';
 import { AuthModule } from './modules/auth/auth.module';
+import { AdminUsersSeeder } from './seeders/admin-users.seeder';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TransactionInterceptor } from './common/interceptors/transaction.interceptor';
 
 @Module({
   imports: [
@@ -23,6 +26,14 @@ import { AuthModule } from './modules/auth/auth.module';
     UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService, UserSeeder],
+  providers: [
+    AppService,
+    SuperAdminUserSeeder,
+    AdminUsersSeeder,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransactionInterceptor,
+    },
+  ],
 })
 export class AppModule {}
