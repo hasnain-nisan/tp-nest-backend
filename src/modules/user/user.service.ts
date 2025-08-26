@@ -5,8 +5,14 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { IUserService } from './interfaces/user-service.interface';
 import { JwtPayload } from 'src/common/interfaces/types.interface';
-import { EntityManager } from 'typeorm';
+import {
+  EntityManager,
+  FindManyOptions,
+  FindOptionsWhere,
+  ILike,
+} from 'typeorm';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { cleanObject } from 'src/common/utils/helper';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -58,5 +64,100 @@ export class UserService implements IUserService {
       },
       manager,
     );
+  }
+
+  async softDelete(
+    id: string,
+    user: JwtPayload,
+    manager?: EntityManager,
+  ): Promise<boolean> {
+    const existing = await this.userRepo.findOne({ where: { id } }, manager);
+    if (!existing) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return this.userRepo
+      .update(
+        id,
+        {
+          isDeleted: true,
+          updatedBy: { id: user.id } as User,
+        },
+        manager,
+      )
+      .then(() => true);
+  }
+
+  async getSingle(id: string, manager?: EntityManager): Promise<User> {
+    const user = await this.userRepo.findOne(
+      {
+        where: { id },
+      },
+      manager,
+    );
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  async getAllPaginated(
+    page: number,
+    limit: number,
+    filters: {
+      email?: string;
+      role?: 'SuperAdmin' | 'Admin';
+      isDeleted?: boolean;
+      canManageUsers?: boolean;
+      canManageClients?: boolean;
+      canManageStakeholders?: boolean;
+      canManageProjects?: boolean;
+      canManageInterviews?: boolean;
+    },
+    sort?: { field: keyof User; order: 'ASC' | 'DESC' },
+    manager?: EntityManager,
+  ): Promise<{
+    items: User[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }> {
+    const accessScopes: User['accessScopes'] = {};
+
+    for (const key of [
+      'canManageUsers',
+      'canManageClients',
+      'canManageStakeholders',
+      'canManageProjects',
+      'canManageInterviews',
+    ] as const) {
+      const value = filters[key];
+      if (value !== undefined) {
+        accessScopes[key] = value;
+      }
+    }
+
+    const where: FindOptionsWhere<User> = {
+      ...(filters.email && { email: ILike(`%${filters.email}%`) }),
+      ...(filters.role && { role: filters.role }),
+      ...(filters.isDeleted !== undefined && { isDeleted: filters.isDeleted }),
+      ...(Object.keys(accessScopes).length > 0 && { accessScopes }),
+    };
+
+    const options: FindManyOptions<User> = {
+      where: cleanObject(where),
+      order: sort?.field ? { [sort.field]: sort.order } : { createdAt: 'DESC' },
+    };
+
+    const [items, total] = await this.userRepo.findAllPaginated(
+      page,
+      limit,
+      options,
+      manager,
+    );
+
+    return {
+      items,
+      total,
+      currentPage: parseInt(page.toString(), 10),
+      totalPages: Math.ceil(total / limit),
+    };
   }
 }

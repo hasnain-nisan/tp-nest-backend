@@ -16,4 +16,31 @@ export interface IUserService {
     user: JwtPayload,
     manager?: EntityManager,
   ): Promise<User | null>;
+  softDelete(
+    id: string,
+    user: JwtPayload,
+    manager?: EntityManager,
+  ): Promise<boolean>;
+  getSingle(id: string, manager?: EntityManager): Promise<User>;
+  getAllPaginated(
+    page: number,
+    limit: number,
+    filters: {
+      email?: string;
+      role?: 'SuperAdmin' | 'Admin';
+      isDeleted?: boolean;
+      canManageUsers?: boolean;
+      canManageClients?: boolean;
+      canManageStakeholders?: boolean;
+      canManageProjects?: boolean;
+      canManageInterviews?: boolean;
+    },
+    sort?: { field: keyof User; order: 'ASC' | 'DESC' },
+    manager?: EntityManager,
+  ): Promise<{
+    items: User[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }>;
 }

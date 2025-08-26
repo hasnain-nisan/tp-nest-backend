@@ -1,3 +1,5 @@
+import { FindOptionsWhere } from 'typeorm';
+
 export function formatFieldName(field: string): string {
   const words = field
     .replace(/([A-Z])/g, ' $1') // Add space before capitals: userName → user Name
@@ -13,4 +15,19 @@ export function formatFieldName(field: string): string {
   const firstWord = words[0][0].toUpperCase() + words[0].slice(1);
   const rest = words.length > 1 ? ` ${words.slice(1).join(' ')}` : '';
   return firstWord + rest;
+}
+
+export function cleanObject<T extends object>(
+  input: FindOptionsWhere<T>,
+): FindOptionsWhere<T> {
+  const result: FindOptionsWhere<T> = {};
+
+  for (const [key, value] of Object.entries(input)) {
+    if (value !== undefined && value !== null) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (result as any)[key] = value;
+    }
+  }
+
+  return result;
 }

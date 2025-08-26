@@ -6,6 +6,7 @@ import {
   InternalServerErrorException,
   ConflictException,
   Logger,
+  BadRequestException,
 } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { Observable, throwError, from } from 'rxjs';
@@ -57,6 +58,7 @@ export class TransactionInterceptor implements NestInterceptor {
               this.logger.error(
                 '❌ Transaction failed',
                 error.stack || error.message,
+                error,
               );
 
               // Handle Postgres unique constraint errors
@@ -70,6 +72,22 @@ export class TransactionInterceptor implements NestInterceptor {
                   message: 'Duplicate entry found.',
                   errors: error.detail ?? 'No detail provided',
                 });
+              }
+
+              // Handle invalid UUID format (usually thrown as BadRequestException)
+              if (
+                isQueryFailedError(error) &&
+                error.name === 'QueryFailedError' &&
+                error.code === '22P02'
+              ) {
+                return throwError(
+                  () =>
+                    new BadRequestException({
+                      statusCode: 400,
+                      message: 'Invalid UUID format',
+                      errors: error.message,
+                    }),
+                );
               }
 
               // Fallback for database errors
