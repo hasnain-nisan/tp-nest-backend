@@ -5,7 +5,6 @@ import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/User.entity';
 import { LoginDto } from './dto/login.dto';
 import { IAuthService } from './interfaces/auth-service.interface';
-import { access } from 'fs';
 
 @Injectable()
 export class AuthService implements IAuthService {
