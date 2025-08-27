@@ -61,6 +61,11 @@ export class TransactionInterceptor implements NestInterceptor {
                 error,
               );
 
+              if (err instanceof BadRequestException) {
+                // Re-throw without logging as a transaction failure
+                return throwError(() => err);
+              }
+
               // Handle Postgres unique constraint errors
               if (
                 isQueryFailedError(error) &&

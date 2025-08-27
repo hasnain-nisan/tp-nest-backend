@@ -15,14 +15,18 @@ export class AuthService implements IAuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({
+      where: { email, isDeleted: false },
+    });
     if (user && (await bcrypt.compare(password, user.password))) {
       return user;
     }
     return null;
   }
 
-  async login(loginDto: LoginDto): Promise<{ access_token: string }> {
+  async login(
+    loginDto: LoginDto,
+  ): Promise<{ access_token: string; user: User }> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -31,10 +35,10 @@ export class AuthService implements IAuthService {
     const payload = {
       email: user.email,
       sub: user.id,
-      accessScopes: user.accessScopes,
     };
     return {
       access_token: this.jwtService.sign(payload),
+      user,
     };
   }
 }

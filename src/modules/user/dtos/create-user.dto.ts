@@ -2,6 +2,7 @@ import {
   IsEmail,
   IsEnum,
   IsString,
+  MinLength,
   Validate,
   ValidationArguments,
   ValidatorConstraint,
@@ -25,9 +26,13 @@ export class CreateUserDto {
   email: string;
 
   @IsString()
+  @MinLength(8, { message: 'Password must be at least 8 characters long' })
   password: string;
 
   @IsString()
+  @MinLength(8, {
+    message: 'Confirm password must be at least 8 characters long',
+  })
   @Match('password', { message: 'Confirm password must match password' })
   confirmPassword: string;
 
