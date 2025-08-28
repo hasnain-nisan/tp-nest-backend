@@ -10,6 +10,7 @@ import {
   FindManyOptions,
   FindOptionsWhere,
   ILike,
+  Raw,
 } from 'typeorm';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { cleanObject } from 'src/common/utils/helper';
@@ -119,7 +120,7 @@ export class UserService implements IUserService {
     currentPage: number;
     totalPages: number;
   }> {
-    const accessScopes: User['accessScopes'] = {};
+    const accessScopeConditions: string[] = [];
 
     for (const key of [
       'canManageUsers',
@@ -130,7 +131,9 @@ export class UserService implements IUserService {
     ] as const) {
       const value = filters[key];
       if (value !== undefined) {
-        accessScopes[key] = value;
+        accessScopeConditions.push(
+          `"User"."access_scopes" ->> '${key}' = '${value}'`,
+        );
       }
     }
 
@@ -138,8 +141,11 @@ export class UserService implements IUserService {
       ...(filters.email && { email: ILike(`%${filters.email}%`) }),
       ...(filters.role && { role: filters.role }),
       ...(filters.isDeleted !== undefined && { isDeleted: filters.isDeleted }),
-      ...(Object.keys(accessScopes).length > 0 && { accessScopes }),
     };
+
+    if (accessScopeConditions.length > 0) {
+      where.accessScopes = Raw(() => accessScopeConditions.join(' AND '));
+    }
 
     const options: FindManyOptions<User> = {
       where: cleanObject(where),
