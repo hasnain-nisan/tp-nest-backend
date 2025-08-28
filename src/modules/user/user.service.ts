@@ -144,6 +144,7 @@ export class UserService implements IUserService {
     const options: FindManyOptions<User> = {
       where: cleanObject(where),
       order: sort?.field ? { [sort.field]: sort.order } : { createdAt: 'DESC' },
+      relations: ['createdBy', 'updatedBy'],
     };
 
     const [items, total] = await this.userRepo.findAllPaginated(
