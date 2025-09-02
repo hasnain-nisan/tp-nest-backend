@@ -72,6 +72,7 @@ export class UserController {
   @Get()
   @ApiMessage('Users fetched successfully')
   getAllPaginated(
+    @AuthUser() user: JwtPayload,
     @Req() req: RequestWithTransaction,
     @Query(new BooleanEmptyToUndefinedPipe())
     filters: {
@@ -93,12 +94,14 @@ export class UserController {
       sortField && sortOrder
         ? { field: sortField, order: sortOrder }
         : undefined;
+
     return this.userService.getAllPaginated(
       page,
       limit,
       filters,
       sort,
       req.transactionManager,
+      user,
     );
   }
 }

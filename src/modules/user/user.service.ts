@@ -10,6 +10,7 @@ import {
   FindManyOptions,
   FindOptionsWhere,
   ILike,
+  Not,
   Raw,
 } from 'typeorm';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -114,6 +115,7 @@ export class UserService implements IUserService {
     },
     sort?: { field: keyof User; order: 'ASC' | 'DESC' },
     manager?: EntityManager,
+    user?: JwtPayload,
   ): Promise<{
     items: User[];
     total: number;
@@ -141,6 +143,7 @@ export class UserService implements IUserService {
       ...(filters.email && { email: ILike(`%${filters.email}%`) }),
       ...(filters.role && { role: filters.role }),
       ...(filters.isDeleted !== undefined && { isDeleted: filters.isDeleted }),
+      ...(user?.id && { id: Not(user.id) }),
     };
 
     if (accessScopeConditions.length > 0) {
