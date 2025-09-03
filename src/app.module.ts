@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { AdminUsersSeeder } from './seeders/admin-users.seeder';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TransactionInterceptor } from './common/interceptors/transaction.interceptor';
+import { ClientModule } from './modules/client/client.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { TransactionInterceptor } from './common/interceptors/transaction.interc
     }),
     AuthModule,
     UserModule,
+    ClientModule,
   ],
   controllers: [AppController],
   providers: [

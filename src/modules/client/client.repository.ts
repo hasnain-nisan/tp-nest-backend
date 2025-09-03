@@ -6,35 +6,36 @@ import {
   FindOneOptions,
   Repository,
 } from 'typeorm';
-import { IUserRepository } from './interfaces/user-repository.interface';
-import { User } from 'src/entities/User.entity';
+import { IClientRepository } from './interfaces/client-repository.interface';
+import { Client } from 'src/entities/Client.entity';
 
 @Injectable()
-export class UserRepository implements IUserRepository {
+export class ClientRepository implements IClientRepository {
   constructor(
-    @InjectRepository(User)
-    private readonly repo: Repository<User>,
+    @InjectRepository(Client)
+    private readonly repo: Repository<Client>,
   ) {}
 
-  private getManagerOrRepo(manager?: EntityManager): Repository<User> {
-    return manager ? manager.getRepository(User) : this.repo;
+  private getManagerOrRepo(manager?: EntityManager): Repository<Client> {
+    return manager ? manager.getRepository(Client) : this.repo;
   }
 
   async findAll(
-    options?: FindManyOptions<User>,
+    options?: FindManyOptions<Client>,
     manager?: EntityManager,
-  ): Promise<User[]> {
+  ): Promise<Client[]> {
     return await this.getManagerOrRepo(manager).find({
       ...options,
+      // relations: ['members', 'whichType'],
     });
   }
 
   async findAllPaginated(
     page: number,
     limit: number,
-    options?: FindManyOptions<User>,
+    options?: FindManyOptions<Client>,
     manager?: EntityManager,
-  ): Promise<[User[], number]> {
+  ): Promise<[Client[], number]> {
     return await this.getManagerOrRepo(manager).findAndCount({
       ...options,
       skip: (page - 1) * limit,
@@ -43,15 +44,18 @@ export class UserRepository implements IUserRepository {
   }
 
   async findOne(
-    options?: FindOneOptions<User>,
+    options?: FindOneOptions<Client>,
     manager?: EntityManager,
-  ): Promise<User | null> {
+  ): Promise<Client | null> {
     return await this.getManagerOrRepo(manager).findOne({
       ...options,
     });
   }
 
-  async create(data: Partial<User>, manager?: EntityManager): Promise<User> {
+  async create(
+    data: Partial<Client>,
+    manager?: EntityManager,
+  ): Promise<Client> {
     const repo = this.getManagerOrRepo(manager);
     const entity = repo.create(data);
     return await repo.save(entity);
@@ -59,9 +63,9 @@ export class UserRepository implements IUserRepository {
 
   async update(
     id: string,
-    data: Partial<User>,
+    data: Partial<Client>,
     manager?: EntityManager,
-  ): Promise<User | null> {
+  ): Promise<Client | null> {
     await this.getManagerOrRepo(manager).update(id, data);
     return await this.findOne({ where: { id } }, manager);
   }
@@ -72,7 +76,7 @@ export class UserRepository implements IUserRepository {
   }
 
   async count(
-    options?: FindManyOptions<User>,
+    options?: FindManyOptions<Client>,
     manager?: EntityManager,
   ): Promise<number> {
     return await this.getManagerOrRepo(manager).count(options);

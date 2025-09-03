@@ -27,7 +27,7 @@ export class UserService implements IUserService {
     manager?: EntityManager,
   ): Promise<User> {
     const hashed = await bcrypt.hash(dto.password, 10);
-    return this.userRepo.create(
+    return await this.userRepo.create(
       {
         ...dto,
         password: hashed,
@@ -44,7 +44,7 @@ export class UserService implements IUserService {
     manager?: EntityManager,
   ): Promise<User | null> {
     const existingUser = await this.userRepo.findOne(
-      { where: { id } },
+      { where: { id, isDeleted: false } },
       manager,
     );
     if (!existingUser) {
@@ -73,7 +73,10 @@ export class UserService implements IUserService {
     user: JwtPayload,
     manager?: EntityManager,
   ): Promise<boolean> {
-    const existing = await this.userRepo.findOne({ where: { id } }, manager);
+    const existing = await this.userRepo.findOne(
+      { where: { id, isDeleted: false } },
+      manager,
+    );
     if (!existing) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
@@ -93,6 +96,7 @@ export class UserService implements IUserService {
     const user = await this.userRepo.findOne(
       {
         where: { id },
+        relations: ['createdBy', 'updatedBy'],
       },
       manager,
     );
