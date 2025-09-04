@@ -28,11 +28,11 @@ import { Client } from 'src/entities/Client.entity';
   version: '1',
 })
 @UseGuards(JwtAuthGuard, AccessControlGuard)
-@AccessScopes('canManageClients')
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
   @Post()
+  @AccessScopes('canManageClients')
   @ApiMessage('Client created successfully')
   create(
     @Req() req: RequestWithTransaction,
@@ -43,6 +43,7 @@ export class ClientController {
   }
 
   @Put(':id')
+  @AccessScopes('canManageClients')
   @ApiMessage('Client updated successfully')
   update(
     @Param('id') id: string,
@@ -54,6 +55,7 @@ export class ClientController {
   }
 
   @Delete(':id')
+  @AccessScopes('canManageClients')
   @ApiMessage('Client deleted successfully')
   softDelete(
     @Param('id') id: string,
@@ -64,6 +66,7 @@ export class ClientController {
   }
 
   @Get(':id')
+  @AccessScopes('canManageClients')
   @ApiMessage('Client fetched successfully')
   getSingle(@Param('id') id: string, @Req() req: RequestWithTransaction) {
     return this.clientService.getSingle(id, req.transactionManager);
