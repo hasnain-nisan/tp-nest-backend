@@ -11,6 +11,9 @@ import { AdminUsersSeeder } from './seeders/admin-users.seeder';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TransactionInterceptor } from './common/interceptors/transaction.interceptor';
 import { ClientModule } from './modules/client/client.module';
+import { ClientSeeder } from './seeders/client.seeder';
+import { ClientStakeholderModule } from './modules/clientStakeholder/clientStakeholder.module';
+import { ClientStakeholderSeeder } from './seeders/stakeholder.seeder';
 
 @Module({
   imports: [
@@ -26,12 +29,15 @@ import { ClientModule } from './modules/client/client.module';
     AuthModule,
     UserModule,
     ClientModule,
+    ClientStakeholderModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     SuperAdminUserSeeder,
     AdminUsersSeeder,
+    ClientSeeder,
+    ClientStakeholderSeeder,
     {
       provide: APP_INTERCEPTOR,
       useClass: TransactionInterceptor,

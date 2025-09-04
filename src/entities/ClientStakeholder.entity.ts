@@ -20,10 +20,10 @@ export class ClientStakeholder {
   @Column({ name: 'name' })
   name: string;
 
-  @Column({ name: 'email', nullable: true })
+  @Column({ name: 'email', nullable: true, unique: true })
   email: string;
 
-  @Column({ name: 'phone', nullable: true })
+  @Column({ name: 'phone', nullable: true, unique: true })
   phone: string;
 
   @ManyToOne(() => Client, (client) => client.stakeholders)
