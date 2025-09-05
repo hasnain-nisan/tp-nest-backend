@@ -45,6 +45,6 @@ export class AdminUsersSeeder implements OnApplicationBootstrap {
       });
     }
 
-    console.log('✅ 100 Admin users seeded');
+    this.logger.log('✅ 100 Admin users seeded');
   }
 }

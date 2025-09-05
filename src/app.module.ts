@@ -14,6 +14,8 @@ import { ClientModule } from './modules/client/client.module';
 import { ClientSeeder } from './seeders/client.seeder';
 import { ClientStakeholderModule } from './modules/clientStakeholder/clientStakeholder.module';
 import { ClientStakeholderSeeder } from './seeders/stakeholder.seeder';
+import { ProjectModule } from './modules/project/project.module';
+import { ProjectSeeder } from './seeders/project.seeder';
 
 @Module({
   imports: [
@@ -30,6 +32,7 @@ import { ClientStakeholderSeeder } from './seeders/stakeholder.seeder';
     UserModule,
     ClientModule,
     ClientStakeholderModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [
@@ -38,6 +41,7 @@ import { ClientStakeholderSeeder } from './seeders/stakeholder.seeder';
     AdminUsersSeeder,
     ClientSeeder,
     ClientStakeholderSeeder,
+    ProjectSeeder,
     {
       provide: APP_INTERCEPTOR,
       useClass: TransactionInterceptor,

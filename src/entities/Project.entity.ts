@@ -20,7 +20,7 @@ export class Project {
   @PrimaryGeneratedColumn('uuid', { name: 'id' })
   id: string;
 
-  @Column({ name: 'name' })
+  @Column({ name: 'name', unique: true })
   name: string;
 
   @Column({ name: 'client_team', nullable: true })
