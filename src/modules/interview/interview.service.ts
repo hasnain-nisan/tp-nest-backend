@@ -104,14 +104,10 @@ export class InterviewService implements IInterviewService {
 
     const updatePayload: Partial<Interview> = {
       ...(dto.name && { name: dto.name }),
-      ...(dto.gDriveId && { gDriveId: dto.gDriveId }),
-      ...(dto.requestDistillation && {
-        requestDistillation: dto.requestDistillation,
-      }),
-      ...(dto.requestCoaching && { requestCoaching: dto.requestCoaching }),
-      ...(dto.requestUserStories && {
-        requestUserStories: dto.requestUserStories,
-      }),
+      gDriveId: dto.gDriveId?.trim() || '',
+      requestDistillation: dto.requestDistillation?.trim() || '',
+      requestCoaching: dto.requestCoaching?.trim() || '',
+      requestUserStories: dto.requestUserStories?.trim() || '',
       ...(dto.date && { date: new Date(dto.date) }),
       ...(client && { client }),
       ...(project && { project }),
