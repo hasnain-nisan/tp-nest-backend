@@ -17,6 +17,7 @@ import { ClientStakeholderSeeder } from './seeders/stakeholder.seeder';
 import { ProjectModule } from './modules/project/project.module';
 import { ProjectSeeder } from './seeders/project.seeder';
 import { InterviewModule } from './modules/interview/interview.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { InterviewModule } from './modules/interview/interview.module';
     ClientStakeholderModule,
     ProjectModule,
     InterviewModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [
