@@ -32,7 +32,7 @@ export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
   @Post()
-  @AccessScopes('canManageClients')
+  @AccessScopes('canCreateClients')
   @ApiMessage('Client created successfully')
   create(
     @Req() req: RequestWithTransaction,
@@ -43,7 +43,7 @@ export class ClientController {
   }
 
   @Put(':id')
-  @AccessScopes('canManageClients')
+  @AccessScopes('canUpdateClients')
   @ApiMessage('Client updated successfully')
   update(
     @Param('id') id: string,
@@ -55,7 +55,7 @@ export class ClientController {
   }
 
   @Delete(':id')
-  @AccessScopes('canManageClients')
+  @AccessScopes('canDeleteClients')
   @ApiMessage('Client deleted successfully')
   softDelete(
     @Param('id') id: string,
@@ -66,7 +66,7 @@ export class ClientController {
   }
 
   @Get(':id')
-  @AccessScopes('canManageClients')
+  @AccessScopes('canAccessClients')
   @ApiMessage('Client fetched successfully')
   getSingle(@Param('id') id: string, @Req() req: RequestWithTransaction) {
     return this.clientService.getSingle(id, req.transactionManager);

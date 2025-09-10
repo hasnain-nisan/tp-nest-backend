@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 import { Client } from './Client.entity';
 import { User } from './User.entity';
-import { Project } from './Project.entity';
 import { Interview } from './DiscoveryInterview.entity';
 
 @Entity('client_stakeholder')

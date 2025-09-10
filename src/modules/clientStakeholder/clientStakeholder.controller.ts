@@ -34,7 +34,7 @@ export class ClientStakeholderController {
   ) {}
 
   @Post()
-  @AccessScopes('canManageStakeholders')
+  @AccessScopes('canCreateStakeholders')
   @ApiMessage('Client stakeholder created successfully')
   create(
     @Req() req: RequestWithTransaction,
@@ -49,7 +49,7 @@ export class ClientStakeholderController {
   }
 
   @Put(':id')
-  @AccessScopes('canManageStakeholders')
+  @AccessScopes('canUpdateStakeholders')
   @ApiMessage('Client stakeholder updated successfully')
   update(
     @Param('id') id: string,
@@ -66,7 +66,7 @@ export class ClientStakeholderController {
   }
 
   @Delete(':id')
-  @AccessScopes('canManageStakeholders')
+  @AccessScopes('canDeleteStakeholders')
   @ApiMessage('Client stakeholder deleted successfully')
   softDelete(
     @Param('id') id: string,
@@ -81,7 +81,7 @@ export class ClientStakeholderController {
   }
 
   @Get(':id')
-  @AccessScopes('canManageStakeholders')
+  @AccessScopes('canAccessStakeholders')
   @ApiMessage('Client stakeholder fetched successfully')
   getSingle(@Param('id') id: string, @Req() req: RequestWithTransaction) {
     return this.clientStakeholderService.getSingle(id, req.transactionManager);

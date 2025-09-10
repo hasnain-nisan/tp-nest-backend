@@ -33,7 +33,7 @@ export class InterviewController {
   constructor(private readonly interviewService: InterviewService) {}
 
   @Post()
-  @AccessScopes('canManageInterviews')
+  @AccessScopes('canCreateInterviews')
   @ApiMessage('Interview created successfully')
   create(
     @Req() req: RequestWithTransaction,
@@ -44,7 +44,7 @@ export class InterviewController {
   }
 
   @Put(':id')
-  @AccessScopes('canManageInterviews')
+  @AccessScopes('canUpdateInterviews')
   @ApiMessage('Interview updated successfully')
   update(
     @Param('id') id: string,
@@ -56,7 +56,7 @@ export class InterviewController {
   }
 
   @Delete(':id')
-  @AccessScopes('canManageInterviews')
+  @AccessScopes('canDeleteInterviews')
   @ApiMessage('Interview deleted successfully')
   softDelete(
     @Param('id') id: string,
@@ -67,7 +67,7 @@ export class InterviewController {
   }
 
   @Get(':id')
-  @AccessScopes('canManageInterviews')
+  @AccessScopes('canAccessInterviews')
   @ApiMessage('Interview fetched successfully')
   getSingle(@Param('id') id: string, @Req() req: RequestWithTransaction) {
     return this.interviewService.getSingle(id, req.transactionManager);

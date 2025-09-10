@@ -43,9 +43,9 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     AppService,
     SuperAdminUserSeeder,
     AdminUsersSeeder,
-    // ClientSeeder,
-    // ClientStakeholderSeeder,
-    // ProjectSeeder,
+    ClientSeeder,
+    ClientStakeholderSeeder,
+    ProjectSeeder,
     {
       provide: APP_INTERCEPTOR,
       useClass: TransactionInterceptor,

@@ -33,7 +33,7 @@ export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
   @Post()
-  @AccessScopes('canManageProjects')
+  @AccessScopes('canCreateProjects')
   @ApiMessage('Project created successfully')
   create(
     @Req() req: RequestWithTransaction,
@@ -44,7 +44,7 @@ export class ProjectController {
   }
 
   @Put(':id')
-  @AccessScopes('canManageProjects')
+  @AccessScopes('canUpdateProjects')
   @ApiMessage('Project updated successfully')
   update(
     @Param('id') id: string,
@@ -56,7 +56,7 @@ export class ProjectController {
   }
 
   @Delete(':id')
-  @AccessScopes('canManageProjects')
+  @AccessScopes('canDeleteProjects')
   @ApiMessage('Project deleted successfully')
   softDelete(
     @Param('id') id: string,
@@ -67,7 +67,7 @@ export class ProjectController {
   }
 
   @Get(':id')
-  @AccessScopes('canManageProjects')
+  @AccessScopes('canAccessProjects')
   @ApiMessage('Project fetched successfully')
   getSingle(@Param('id') id: string, @Req() req: RequestWithTransaction) {
     return this.projectService.getSingle(id, req.transactionManager);

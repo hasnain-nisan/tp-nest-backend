@@ -4,7 +4,6 @@ import { ClientRepository } from 'src/modules/client/client.repository';
 import { UserRepository } from 'src/modules/user/user.repository';
 import { ClientStakeholderRepository } from 'src/modules/clientStakeholder/clientStakeholder.repository';
 import { Client } from 'src/entities/Client.entity';
-import { ClientStakeholder } from 'src/entities/ClientStakeholder.entity';
 
 @Injectable()
 export class ProjectSeeder implements OnApplicationBootstrap {
