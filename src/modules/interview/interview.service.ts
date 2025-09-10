@@ -147,13 +147,7 @@ export class InterviewService implements IInterviewService {
     const existing = await this.interviewRepo.findOne(
       {
         where: { id },
-        relations: [
-          'client',
-          'project',
-          'project.stakeholders',
-          'createdBy',
-          'updatedBy',
-        ],
+        relations: ['client', 'project', 'createdBy', 'updatedBy'],
       },
       manager,
     );

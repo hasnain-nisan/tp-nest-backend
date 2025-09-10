@@ -97,7 +97,7 @@ export class ClientStakeholderService implements IClientStakeholderService {
     const existing = await this.clientStakeholderRepo.findOne(
       {
         where: { id },
-        relations: ['createdBy', 'updatedBy', 'client', 'projects'],
+        relations: ['createdBy', 'updatedBy', 'client', 'interviews'],
       },
       manager,
     );

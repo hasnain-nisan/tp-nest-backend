@@ -83,7 +83,7 @@ export class ProjectController {
       name?: string;
       clientTeam?: string;
       clientId?: string;
-      stakeholderId?: string;
+      // stakeholderId?: string;
       isDeleted?: boolean;
     },
     @Query('sortField') sortField?: keyof Project,

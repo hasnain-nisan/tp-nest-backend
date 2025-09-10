@@ -3,7 +3,7 @@ import {
   IsString,
   IsNotEmpty,
   IsUUID,
-  IsArray,
+  // IsArray,
 } from 'class-validator';
 
 export class UpdateProjectDto {
@@ -21,11 +21,11 @@ export class UpdateProjectDto {
   @IsUUID('4', { message: 'Invalid client ID format' })
   clientId?: string;
 
-  @IsOptional()
-  @IsArray({ message: 'Stakeholders must be an array of UUIDs' })
-  @IsUUID('4', {
-    each: true,
-    message: 'Each stakeholder ID must be a valid UUID',
-  })
-  stakeholderIds?: string[];
+  // @IsOptional()
+  // @IsArray({ message: 'Stakeholders must be an array of UUIDs' })
+  // @IsUUID('4', {
+  //   each: true,
+  //   message: 'Each stakeholder ID must be a valid UUID',
+  // })
+  // stakeholderIds?: string[];
 }

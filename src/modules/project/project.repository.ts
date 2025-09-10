@@ -65,16 +65,16 @@ export class ProjectRepository implements IProjectRepository {
     data: Partial<Project>,
     manager?: EntityManager,
   ): Promise<Project | null> {
-    // await this.getManagerOrRepo(manager).update(id, data);
-    // return await this.findOne({ where: { id } }, manager);
-
-    const repo = this.getManagerOrRepo(manager);
-    const existing = await repo.findOneByOrFail({ id });
-
-    const updated = repo.merge(existing, data);
-    await repo.save(updated);
-
+    await this.getManagerOrRepo(manager).update(id, data);
     return await this.findOne({ where: { id } }, manager);
+
+    // const repo = this.getManagerOrRepo(manager);
+    // const existing = await repo.findOneByOrFail({ id });
+
+    // const updated = repo.merge(existing, data);
+    // await repo.save(updated);
+
+    // return await this.findOne({ where: { id } }, manager);
   }
 
   async delete(id: string, manager?: EntityManager): Promise<boolean> {
@@ -96,7 +96,7 @@ export class ProjectRepository implements IProjectRepository {
       name?: string;
       clientTeam?: string;
       clientId?: string;
-      stakeholderId?: string;
+      // stakeholderId?: string;
       isDeleted?: boolean;
     },
     sort?: { field: keyof Project; order: 'ASC' | 'DESC' },
@@ -109,7 +109,7 @@ export class ProjectRepository implements IProjectRepository {
       .leftJoinAndSelect('project.client', 'client')
       .leftJoinAndSelect('project.createdBy', 'createdBy')
       .leftJoinAndSelect('project.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('project.stakeholders', 'stakeholders')
+      // .leftJoinAndSelect('project.stakeholders', 'stakeholders')
       .leftJoinAndSelect('project.interviews', 'interviews');
 
     if (filters.name) {
@@ -130,11 +130,11 @@ export class ProjectRepository implements IProjectRepository {
       });
     }
 
-    if (filters.stakeholderId) {
-      qb.andWhere('stakeholders.id = :stakeholderId', {
-        stakeholderId: filters.stakeholderId,
-      });
-    }
+    // if (filters.stakeholderId) {
+    //   qb.andWhere('stakeholders.id = :stakeholderId', {
+    //     stakeholderId: filters.stakeholderId,
+    //   });
+    // }
 
     if (filters.isDeleted !== undefined) {
       qb.andWhere('project.isDeleted = :isDeleted', {

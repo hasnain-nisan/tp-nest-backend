@@ -104,7 +104,7 @@ export class ClientStakeholderRepository
       .leftJoinAndSelect('stakeholder.client', 'client')
       .leftJoinAndSelect('stakeholder.createdBy', 'createdBy')
       .leftJoinAndSelect('stakeholder.updatedBy', 'updatedBy')
-      .leftJoinAndSelect('stakeholder.projects', 'projects');
+      .leftJoinAndSelect('stakeholder.interviews', 'interviews');
 
     if (filters.name) {
       qb.andWhere('stakeholder.name ILIKE :name', {

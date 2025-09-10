@@ -3,8 +3,8 @@ import {
   IsNotEmpty,
   IsOptional,
   IsUUID,
-  IsArray,
-  ArrayMinSize,
+  // IsArray,
+  // ArrayMinSize,
 } from 'class-validator';
 
 export class CreateProjectDto {
@@ -20,11 +20,11 @@ export class CreateProjectDto {
   @IsUUID('4', { message: 'Invalid client ID format' })
   clientId: string;
 
-  @IsArray({ message: 'Stakeholders must be an array of UUIDs' })
-  @ArrayMinSize(1, { message: 'At least one stakeholder must be assigned' })
-  @IsUUID('4', {
-    each: true,
-    message: 'Each stakeholder ID must be a valid UUID',
-  })
-  stakeholderIds: string[];
+  // @IsArray({ message: 'Stakeholders must be an array of UUIDs' })
+  // @ArrayMinSize(1, { message: 'At least one stakeholder must be assigned' })
+  // @IsUUID('4', {
+  //   each: true,
+  //   message: 'Each stakeholder ID must be a valid UUID',
+  // })
+  // stakeholderIds: string[];
 }

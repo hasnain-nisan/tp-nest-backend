@@ -97,7 +97,7 @@ export class InterviewRepository implements IInterviewRepository {
       .createQueryBuilder('interview')
       .leftJoinAndSelect('interview.client', 'client')
       .leftJoinAndSelect('interview.project', 'project')
-      .leftJoinAndSelect('project.stakeholders', 'projectStakeholders')
+      // .leftJoinAndSelect('project.stakeholders', 'projectStakeholders')
       .leftJoinAndSelect('interview.createdBy', 'createdBy')
       .leftJoinAndSelect('interview.updatedBy', 'updatedBy');
 
