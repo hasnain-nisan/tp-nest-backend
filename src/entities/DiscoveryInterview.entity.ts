@@ -6,10 +6,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Client } from './Client.entity';
 import { Project } from './Project.entity';
 import { User } from './User.entity';
+import { ClientStakeholder } from './ClientStakeholder.entity';
 
 @Entity('discovery_interview')
 export class Interview {
@@ -58,4 +61,18 @@ export class Interview {
 
   @Column({ name: 'is_deleted', default: false })
   isDeleted: boolean;
+
+  @ManyToMany(() => ClientStakeholder, (stakeholder) => stakeholder.interviews)
+  @JoinTable({
+    name: 'interview_stakeholders',
+    joinColumn: {
+      name: 'interview_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'stakeholder_id',
+      referencedColumnName: 'id',
+    },
+  })
+  stakeholders: ClientStakeholder[];
 }

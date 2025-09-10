@@ -109,13 +109,48 @@ export class UserService implements IUserService {
     limit: number,
     filters: {
       email?: string;
-      role?: 'SuperAdmin' | 'Admin';
+      role?: 'SuperAdmin' | 'Admin' | 'InterviewUser';
       isDeleted?: boolean;
-      canManageUsers?: boolean;
-      canManageClients?: boolean;
-      canManageStakeholders?: boolean;
-      canManageProjects?: boolean;
-      canManageInterviews?: boolean;
+
+      // User Management
+      canAccessUsers?: boolean;
+      canCreateUsers?: boolean;
+      canUpdateUsers?: boolean;
+      canDeleteUsers?: boolean;
+
+      // Client Management
+      canAccessClients?: boolean;
+      canCreateClients?: boolean;
+      canUpdateClients?: boolean;
+      canDeleteClients?: boolean;
+
+      // Stakeholder Management
+      canAccessStakeholders?: boolean;
+      canCreateStakeholders?: boolean;
+      canUpdateStakeholders?: boolean;
+      canDeleteStakeholders?: boolean;
+
+      // Project Management
+      canAccessProjects?: boolean;
+      canCreateProjects?: boolean;
+      canUpdateProjects?: boolean;
+      canDeleteProjects?: boolean;
+
+      // Interview Management
+      canAccessInterviews?: boolean;
+      canCreateInterviews?: boolean;
+      canUpdateInterviews?: boolean;
+      canDeleteInterviews?: boolean;
+
+      // TPConfig / N8N Configs
+      canAccessConfig?: boolean;
+      canCreateConfig?: boolean;
+      canUpdateConfig?: boolean;
+      canDeleteConfig?: boolean;
+
+      // Admin Settings
+      canAccessAdminSettings?: boolean;
+      canUpdateAdminSettings?: boolean;
     },
     sort?: { field: keyof User; order: 'ASC' | 'DESC' },
     manager?: EntityManager,
@@ -128,12 +163,47 @@ export class UserService implements IUserService {
   }> {
     const accessScopeConditions: string[] = [];
 
+    // Loop through all possible access scope keys
     for (const key of [
-      'canManageUsers',
-      'canManageClients',
-      'canManageStakeholders',
-      'canManageProjects',
-      'canManageInterviews',
+      // User Management
+      'canAccessUsers',
+      'canCreateUsers',
+      'canUpdateUsers',
+      'canDeleteUsers',
+
+      // Client Management
+      'canAccessClients',
+      'canCreateClients',
+      'canUpdateClients',
+      'canDeleteClients',
+
+      // Stakeholder Management
+      'canAccessStakeholders',
+      'canCreateStakeholders',
+      'canUpdateStakeholders',
+      'canDeleteStakeholders',
+
+      // Project Management
+      'canAccessProjects',
+      'canCreateProjects',
+      'canUpdateProjects',
+      'canDeleteProjects',
+
+      // Interview Management
+      'canAccessInterviews',
+      'canCreateInterviews',
+      'canUpdateInterviews',
+      'canDeleteInterviews',
+
+      // TPConfig / N8N Configs
+      'canAccessConfig',
+      'canCreateConfig',
+      'canUpdateConfig',
+      'canDeleteConfig',
+
+      // Admin Settings
+      'canAccessAdminSettings',
+      'canUpdateAdminSettings',
     ] as const) {
       const value = filters[key];
       if (value !== undefined) {

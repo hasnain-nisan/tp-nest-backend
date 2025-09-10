@@ -29,11 +29,45 @@ export class AdminUsersSeeder implements OnApplicationBootstrap {
       const email = `admin${i}@example.com`;
 
       const accessScopes = {
-        canManageUsers: Math.random() < 0.5,
-        canManageClients: Math.random() < 0.5,
-        canManageStakeholders: Math.random() < 0.5,
-        canManageProjects: Math.random() < 0.5,
-        canManageInterviews: Math.random() < 0.5,
+        // User Management
+        canAccessUsers: true,
+        canCreateUsers: Math.random() < 0.5,
+        canUpdateUsers: Math.random() < 0.5,
+        canDeleteUsers: Math.random() < 0.5,
+
+        // Client Management
+        canAccessClients: true,
+        canCreateClients: Math.random() < 0.5,
+        canUpdateClients: Math.random() < 0.5,
+        canDeleteClients: Math.random() < 0.5,
+
+        // Stakeholder Management
+        canAccessStakeholders: true,
+        canCreateStakeholders: Math.random() < 0.5,
+        canUpdateStakeholders: Math.random() < 0.5,
+        canDeleteStakeholders: Math.random() < 0.5,
+
+        // Project Management
+        canAccessProjects: true,
+        canCreateProjects: Math.random() < 0.5,
+        canUpdateProjects: Math.random() < 0.5,
+        canDeleteProjects: Math.random() < 0.5,
+
+        // Interview Management
+        canAccessInterviews: true,
+        canCreateInterviews: Math.random() < 0.5,
+        canUpdateInterviews: Math.random() < 0.5,
+        canDeleteInterviews: Math.random() < 0.5,
+
+        // TPConfig Module
+        canAccessConfig: true,
+        canCreateConfig: Math.random() < 0.5,
+        canUpdateConfig: Math.random() < 0.5,
+        canDeleteConfig: Math.random() < 0.5,
+
+        // AdminSettings Module
+        canAccessAdminSettings: true,
+        canUpdateAdminSettings: Math.random() < 0.5,
       };
 
       await this.userRepo.create({

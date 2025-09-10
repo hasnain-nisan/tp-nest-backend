@@ -51,20 +51,20 @@ export class ProjectSeeder implements OnApplicationBootstrap {
     for (let i = 1; i <= 100; i++) {
       const randomClient: Client =
         eligibleClients[Math.floor(Math.random() * eligibleClients.length)];
-      const clientStakeholders: ClientStakeholder[] = randomClient.stakeholders;
+      // const clientStakeholders: ClientStakeholder[] = randomClient.stakeholders;
 
       // Ensure at least 1 and at most 3 stakeholders
-      const shuffled = clientStakeholders.sort(() => 0.5 - Math.random());
-      const selectedStakeholders = shuffled.slice(
-        0,
-        Math.min(3, clientStakeholders.length),
-      );
+      // const shuffled = clientStakeholders.sort(() => 0.5 - Math.random());
+      // const selectedStakeholders = shuffled.slice(
+      //   0,
+      //   Math.min(3, clientStakeholders.length),
+      // );
 
       await this.projectRepo.create({
         name: `Project ${i}`,
         clientTeam: `Team ${i}`,
         client: randomClient,
-        stakeholders: selectedStakeholders,
+        // stakeholders: selectedStakeholders,
         createdBy: superAdmin,
         updatedBy: superAdmin,
       });

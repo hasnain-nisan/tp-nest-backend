@@ -11,6 +11,7 @@ import {
 import { Client } from './Client.entity';
 import { User } from './User.entity';
 import { Project } from './Project.entity';
+import { Interview } from './DiscoveryInterview.entity';
 
 @Entity('client_stakeholder')
 export class ClientStakeholder {
@@ -38,8 +39,8 @@ export class ClientStakeholder {
   @JoinColumn({ name: 'updated_by' })
   updatedBy: User;
 
-  @ManyToMany(() => Project, (project) => project.stakeholders)
-  projects: Project[];
+  @ManyToMany(() => Interview, (interview) => interview.stakeholders)
+  interviews: Interview[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

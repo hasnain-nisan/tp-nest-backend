@@ -49,16 +49,16 @@ export class ProjectService implements IProjectService {
       );
     }
 
-    const stakeholders = await this.stakeholderRepo.findAll(
-      { where: { id: In(dto.stakeholderIds), isDeleted: false } },
-      manager,
-    );
+    // const stakeholders = await this.stakeholderRepo.findAll(
+    //   { where: { id: In(dto.stakeholderIds), isDeleted: false } },
+    //   manager,
+    // );
 
     return await this.projectRepo.create(
       {
         ...dto,
         client: { id: dto.clientId } as Client,
-        stakeholders,
+        // stakeholders,
         createdBy: { id: user.id } as User,
       },
       manager,

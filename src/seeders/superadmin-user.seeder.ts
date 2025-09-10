@@ -35,13 +35,48 @@ export class SuperAdminUserSeeder implements OnApplicationBootstrap {
       password: hashed,
       role: 'SuperAdmin',
       accessScopes: {
-        canManageUsers: true,
-        canManageClients: true,
-        canManageStakeholders: true,
-        canManageProjects: true,
-        canManageInterviews: true,
+        // User Management
+        canAccessUsers: true,
+        canCreateUsers: true,
+        canUpdateUsers: true,
+        canDeleteUsers: true,
+
+        // Client Management
+        canAccessClients: true,
+        canCreateClients: true,
+        canUpdateClients: true,
+        canDeleteClients: true,
+
+        // Stakeholder Management
+        canAccessStakeholders: true,
+        canCreateStakeholders: true,
+        canUpdateStakeholders: true,
+        canDeleteStakeholders: true,
+
+        // Project Management
+        canAccessProjects: true,
+        canCreateProjects: true,
+        canUpdateProjects: true,
+        canDeleteProjects: true,
+
+        // Interview Management
+        canAccessInterviews: true,
+        canCreateInterviews: true,
+        canUpdateInterviews: true,
+        canDeleteInterviews: true,
+
+        // TPConfig Module
+        canAccessConfig: true,
+        canCreateConfig: true,
+        canUpdateConfig: true,
+        canDeleteConfig: true,
+
+        // AdminSettings Module
+        canAccessAdminSettings: true,
+        canUpdateAdminSettings: true,
       },
     });
+
     this.logger.log(`✅ SuperAdmin seeded from .env`);
   }
 }

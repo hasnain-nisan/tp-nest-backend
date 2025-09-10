@@ -3,14 +3,11 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  ManyToMany,
   OneToMany,
   JoinColumn,
-  JoinTable,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ClientStakeholder } from './ClientStakeholder.entity';
 import { User } from './User.entity';
 import { Interview } from './DiscoveryInterview.entity';
 import { Client } from './Client.entity';
@@ -29,20 +26,6 @@ export class Project {
   @ManyToOne(() => Client, (client) => client.projects)
   @JoinColumn({ name: 'client_id' })
   client: Client;
-
-  @ManyToMany(() => ClientStakeholder, (stakeholder) => stakeholder.projects)
-  @JoinTable({
-    name: 'project_stakeholders', // junction table name
-    joinColumn: {
-      name: 'project_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'stakeholder_id',
-      referencedColumnName: 'id',
-    },
-  })
-  stakeholders: ClientStakeholder[];
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'created_by' })

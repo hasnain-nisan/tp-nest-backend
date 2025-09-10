@@ -36,17 +36,51 @@ export class CreateUserDto {
   @Match('password', { message: 'Confirm password must match password' })
   confirmPassword: string;
 
-  @IsEnum(['Admin'], {
+  @IsEnum(['Admin', 'InterviewUser'], {
     message: `Role must be one of the following values: Admin`,
   })
-  role: 'Admin';
+  role: 'Admin' | 'InterviewUser';
 
   @Validate(AtLeastOneScope)
   accessScopes: {
-    canManageUsers?: boolean;
-    canManageClients?: boolean;
-    canManageStakeholders?: boolean;
-    canManageProjects?: boolean;
-    canManageInterviews?: boolean;
+    // User Management
+    canAccessUsers?: boolean;
+    canCreateUsers?: boolean;
+    canUpdateUsers?: boolean;
+    canDeleteUsers?: boolean;
+
+    // Client Management
+    canAccessClients?: boolean;
+    canCreateClients?: boolean;
+    canUpdateClients?: boolean;
+    canDeleteClients?: boolean;
+
+    // Stakeholder Management
+    canAccessStakeholders?: boolean;
+    canCreateStakeholders?: boolean;
+    canUpdateStakeholders?: boolean;
+    canDeleteStakeholders?: boolean;
+
+    // Project Management
+    canAccessProjects?: boolean;
+    canCreateProjects?: boolean;
+    canUpdateProjects?: boolean;
+    canDeleteProjects?: boolean;
+
+    // Interview Management
+    canAccessInterviews?: boolean;
+    canCreateInterviews?: boolean;
+    canUpdateInterviews?: boolean;
+    canDeleteInterviews?: boolean;
+
+    // TPConfig Module
+    canAccessConfig?: boolean;
+    canCreateConfig?: boolean;
+    canUpdateConfig?: boolean;
+    canDeleteConfig?: boolean;
+
+    // AdminSettings Module
+    canAccessAdminSettings?: boolean;
+    canUpdateAdminSettings?: boolean;
   };
 }
