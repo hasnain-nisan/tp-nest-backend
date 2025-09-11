@@ -11,6 +11,7 @@ import { UpdateProjectDto } from './dtos/update-project.dto';
 import { IProjectService } from './interfaces/project-service.interface';
 import { ClientStakeholderRepository } from '../clientStakeholder/clientStakeholder.repository';
 import { ClientStakeholder } from 'src/entities/ClientStakeholder.entity';
+import { de } from 'date-fns/locale';
 
 @Injectable()
 export class ProjectService implements IProjectService {
@@ -71,7 +72,7 @@ export class ProjectService implements IProjectService {
     user: JwtPayload,
     manager?: EntityManager,
   ): Promise<Project | null> {
-    const { clientId, ...rest } = dto;
+    const { clientId, description, ...rest } = dto;
 
     const existingProject = await this.projectRepo.findOne(
       {
@@ -148,6 +149,7 @@ export class ProjectService implements IProjectService {
       {
         ...rest,
         ...(clientId && { client: { id: clientId } as Client }),
+        ...(description && { description }),
         updatedBy: { id: user.id } as User,
       },
       manager,

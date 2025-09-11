@@ -21,6 +21,11 @@ export class UpdateProjectDto {
   @IsUUID('4', { message: 'Invalid client ID format' })
   clientId?: string;
 
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty({ message: 'Project description must not be empty if provided' })
+  description?: string;
+
   // @IsOptional()
   // @IsArray({ message: 'Stakeholders must be an array of UUIDs' })
   // @IsUUID('4', {

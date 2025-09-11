@@ -4,6 +4,8 @@ import {
   IsOptional,
   IsUUID,
   IsDateString,
+  IsArray,
+  ArrayMinSize,
 } from 'class-validator';
 
 export class CreateInterviewDto {
@@ -35,4 +37,12 @@ export class CreateInterviewDto {
 
   @IsUUID('4', { message: 'Invalid project ID format' })
   projectId: string;
+
+  @IsArray({ message: 'Stakeholders must be an array of UUIDs' })
+  @ArrayMinSize(1, { message: 'At least one stakeholder must be assigned' })
+  @IsUUID('4', {
+    each: true,
+    message: 'Each stakeholder ID must be a valid UUID',
+  })
+  stakeholderIds: string[];
 }

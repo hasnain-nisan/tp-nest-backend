@@ -61,7 +61,15 @@ export class InterviewRepository implements IInterviewRepository {
     data: Partial<Interview>,
     manager?: EntityManager,
   ): Promise<Interview | null> {
-    await this.getManagerOrRepo(manager).update(id, data);
+    // await this.getManagerOrRepo(manager).update(id, data);
+    // return await this.findOne({ where: { id } }, manager);
+
+    const repo = this.getManagerOrRepo(manager);
+    const existing = await repo.findOneByOrFail({ id });
+
+    const updated = repo.merge(existing, data);
+    await repo.save(updated);
+
     return await this.findOne({ where: { id } }, manager);
   }
 
@@ -84,6 +92,7 @@ export class InterviewRepository implements IInterviewRepository {
       name?: string;
       clientId?: string;
       projectId?: string;
+      stakeholderId?: string;
       isDeleted?: boolean;
       startDate?: Date;
       endDate?: Date;
@@ -97,7 +106,7 @@ export class InterviewRepository implements IInterviewRepository {
       .createQueryBuilder('interview')
       .leftJoinAndSelect('interview.client', 'client')
       .leftJoinAndSelect('interview.project', 'project')
-      // .leftJoinAndSelect('project.stakeholders', 'projectStakeholders')
+      .leftJoinAndSelect('interview.stakeholders', 'stakeholders')
       .leftJoinAndSelect('interview.createdBy', 'createdBy')
       .leftJoinAndSelect('interview.updatedBy', 'updatedBy');
 
@@ -116,6 +125,12 @@ export class InterviewRepository implements IInterviewRepository {
     if (filters.projectId) {
       qb.andWhere('project.id = :projectId', {
         projectId: filters.projectId,
+      });
+    }
+
+    if (filters.stakeholderId) {
+      qb.andWhere('stakeholders.id = :stakeholderId', {
+        stakeholderId: filters.stakeholderId,
       });
     }
 

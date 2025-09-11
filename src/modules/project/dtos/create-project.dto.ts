@@ -20,6 +20,10 @@ export class CreateProjectDto {
   @IsUUID('4', { message: 'Invalid client ID format' })
   clientId: string;
 
+  @IsString()
+  @IsNotEmpty({ message: 'Project description must not be empty' })
+  description: string;
+
   // @IsArray({ message: 'Stakeholders must be an array of UUIDs' })
   // @ArrayMinSize(1, { message: 'At least one stakeholder must be assigned' })
   // @IsUUID('4', {

@@ -27,6 +27,9 @@ export class Project {
   @JoinColumn({ name: 'client_id' })
   client: Client;
 
+  @Column({ name: 'description', type: 'text' })
+  description: string;
+
   @ManyToOne(() => User)
   @JoinColumn({ name: 'created_by' })
   createdBy: User;

@@ -83,6 +83,7 @@ export class InterviewController {
       name?: string;
       clientId?: string;
       projectId?: string;
+      stakeholderId?: string;
       isDeleted?: boolean;
     },
     @Query('startDate') startDate?: string,

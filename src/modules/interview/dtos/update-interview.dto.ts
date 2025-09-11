@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsUUID,
   IsDateString,
+  IsArray,
 } from 'class-validator';
 
 export class UpdateInterviewDto {
@@ -42,4 +43,12 @@ export class UpdateInterviewDto {
   @IsOptional()
   @IsUUID('4', { message: 'Invalid project ID format' })
   projectId: string;
+
+  @IsOptional()
+  @IsArray({ message: 'Stakeholders must be an array of UUIDs' })
+  @IsUUID('4', {
+    each: true,
+    message: 'Each stakeholder ID must be a valid UUID',
+  })
+  stakeholderIds?: string[];
 }
