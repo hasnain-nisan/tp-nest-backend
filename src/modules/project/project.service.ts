@@ -1,5 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { EntityManager, In } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { JwtPayload } from 'src/common/interfaces/types.interface';
 import { User } from 'src/entities/User.entity';
 import { Project } from 'src/entities/Project.entity';
@@ -10,8 +10,6 @@ import { CreateProjectDto } from './dtos/create-project.dto';
 import { UpdateProjectDto } from './dtos/update-project.dto';
 import { IProjectService } from './interfaces/project-service.interface';
 import { ClientStakeholderRepository } from '../clientStakeholder/clientStakeholder.repository';
-import { ClientStakeholder } from 'src/entities/ClientStakeholder.entity';
-import { de } from 'date-fns/locale';
 
 @Injectable()
 export class ProjectService implements IProjectService {

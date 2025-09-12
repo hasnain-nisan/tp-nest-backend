@@ -18,6 +18,8 @@ import { ProjectModule } from './modules/project/project.module';
 import { ProjectSeeder } from './seeders/project.seeder';
 import { InterviewModule } from './modules/interview/interview.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { AdminSettingsModule } from './modules/AdminSettings/admin-settings.module';
+import { AdminSettingsSeeder } from './seeders/admin-settings.seeder';
 
 @Module({
   imports: [
@@ -37,6 +39,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     ProjectModule,
     InterviewModule,
     DashboardModule,
+    AdminSettingsModule,
   ],
   controllers: [AppController],
   providers: [
@@ -46,6 +49,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     ClientSeeder,
     ClientStakeholderSeeder,
     ProjectSeeder,
+    AdminSettingsSeeder,
     {
       provide: APP_INTERCEPTOR,
       useClass: TransactionInterceptor,

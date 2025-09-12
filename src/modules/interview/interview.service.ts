@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { EntityManager, In } from 'typeorm';
 import { JwtPayload } from 'src/common/interfaces/types.interface';
 import { User } from 'src/entities/User.entity';
@@ -13,6 +18,7 @@ import { InterviewRepository } from './interview.repository';
 import { Interview } from 'src/entities/DiscoveryInterview.entity';
 import { ClientStakeholderRepository } from '../clientStakeholder/clientStakeholder.repository';
 import { ClientStakeholder } from 'src/entities/ClientStakeholder.entity';
+import { AdminSettingsService } from '../AdminSettings/admin-settings.service';
 
 @Injectable()
 export class InterviewService implements IInterviewService {
@@ -23,6 +29,7 @@ export class InterviewService implements IInterviewService {
     private readonly clientRepo: ClientRepository,
     private readonly projectRepo: ProjectRepository,
     private readonly stakeholderRepo: ClientStakeholderRepository,
+    private readonly settingsService: AdminSettingsService,
   ) {}
 
   async create(
@@ -70,6 +77,22 @@ export class InterviewService implements IInterviewService {
       { where: { id: In(dto.stakeholderIds), isDeleted: false } },
       manager,
     );
+
+    if (dto.gDriveId) {
+      const settings = await this.settingsService.getSingle(manager);
+
+      if (!settings.clientEmail || !settings.privateKey) {
+        throw new BadRequestException(
+          'Missing Google credentials in Admin Settings',
+        );
+      }
+
+      await this.settingsService.validateGDriveIdWithSdk(
+        dto.gDriveId.trim(),
+        settings.clientEmail,
+        settings.privateKey,
+      );
+    }
 
     return await this.interviewRepo.create(
       {
@@ -175,6 +198,22 @@ export class InterviewService implements IInterviewService {
           `No valid stakeholders found for the provided IDs`,
         );
       }
+    }
+
+    if (dto.gDriveId) {
+      const settings = await this.settingsService.getSingle(manager);
+
+      if (!settings.clientEmail || !settings.privateKey) {
+        throw new BadRequestException(
+          'Missing Google credentials in Admin Settings',
+        );
+      }
+
+      await this.settingsService.validateGDriveIdWithSdk(
+        dto.gDriveId.trim(),
+        settings.clientEmail,
+        settings.privateKey,
+      );
     }
 
     const updatePayload: Partial<Interview> = {
