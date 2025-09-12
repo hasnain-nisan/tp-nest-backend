@@ -38,7 +38,9 @@ export class AdminSettingsService implements IAdminSettingsService {
     clientEmail: string,
     privateKey: string,
   ): Promise<void> {
-    const drive = this.initializeDriveClient(clientEmail, privateKey);
+    const formattedKey = privateKey.replace(/\\n/g, '\n');
+
+    const drive = this.initializeDriveClient(clientEmail, formattedKey);
 
     try {
       const res = await drive.files.get({
