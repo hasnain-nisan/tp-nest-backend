@@ -6,6 +6,7 @@ import {
   IsDateString,
   IsArray,
   ArrayMinSize,
+  Matches,
 } from 'class-validator';
 
 export class CreateInterviewDto {
@@ -16,8 +17,11 @@ export class CreateInterviewDto {
   @IsDateString({}, { message: 'Date must be a valid ISO timestamp' })
   date: string;
 
-  @IsOptional()
+  // @IsOptional()
   @IsString()
+  @Matches(/^[a-zA-Z0-9_-]{25,}$/, {
+    message: 'Google Drive ID must be a valid raw ID (not a URL)',
+  })
   gDriveId?: string;
 
   @IsOptional()

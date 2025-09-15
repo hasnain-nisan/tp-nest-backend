@@ -31,3 +31,11 @@ export function cleanObject<T extends object>(
 
   return result;
 }
+
+export function extractDriveId(input?: string): string | undefined {
+  if (!input) return undefined;
+  const trimmed = input.trim();
+  const regex = /[-\w]{25,}/; // Matches typical Drive ID patterns
+  const match = regex.exec(trimmed);
+  return match ? match[0] : undefined;
+}

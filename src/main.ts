@@ -43,9 +43,12 @@ async function bootstrap() {
       transform: true, // Transform payloads to DTO instances
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
         const errors = flattenValidationErrors(validationErrors);
+        const firstField = Object.keys(errors)[0];
+        const firstMessage = errors[firstField]?.[0] ?? 'Validation failed';
+
         return new BadRequestException({
           statusCode: 400,
-          message: 'Validation failed',
+          message: firstMessage,
           errors,
         });
       },

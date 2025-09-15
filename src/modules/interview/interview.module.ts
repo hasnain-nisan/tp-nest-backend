@@ -8,6 +8,8 @@ import { InterviewRepository } from './interview.repository';
 import { InterviewService } from './interview.service';
 import { ProjectModule } from '../project/project.module';
 import { AdminSettingsModule } from '../AdminSettings/admin-settings.module';
+import { UserModule } from '../user/user.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { AdminSettingsModule } from '../AdminSettings/admin-settings.module';
     ClientStakeholderModule,
     ProjectModule,
     AdminSettingsModule,
+    UserModule,
+    AuthModule,
   ],
   controllers: [InterviewController],
   providers: [InterviewRepository, InterviewService],

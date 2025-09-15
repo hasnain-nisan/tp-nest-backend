@@ -19,6 +19,9 @@ import { Interview } from 'src/entities/DiscoveryInterview.entity';
 import { ClientStakeholderRepository } from '../clientStakeholder/clientStakeholder.repository';
 import { ClientStakeholder } from 'src/entities/ClientStakeholder.entity';
 import { AdminSettingsService } from '../AdminSettings/admin-settings.service';
+import { extractDriveId } from 'src/common/utils/helper';
+import { UserRepository } from '../user/user.repository';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class InterviewService implements IInterviewService {
@@ -30,6 +33,8 @@ export class InterviewService implements IInterviewService {
     private readonly projectRepo: ProjectRepository,
     private readonly stakeholderRepo: ClientStakeholderRepository,
     private readonly settingsService: AdminSettingsService,
+    private readonly userRepo: UserRepository,
+    private readonly jwtService: JwtService,
   ) {}
 
   async create(
@@ -78,23 +83,30 @@ export class InterviewService implements IInterviewService {
       manager,
     );
 
-    if (dto.gDriveId) {
-      const settings = await this.settingsService.getSingle(manager);
+    // if (dto.gDriveId) {
+    //   const settings = await this.settingsService.getSingle(manager);
 
-      if (!settings.clientEmail || !settings.privateKey) {
-        throw new BadRequestException(
-          'Missing Google credentials in Admin Settings',
-        );
-      }
+    //   if (!settings.clientEmail || !settings.privateKey) {
+    //     throw new BadRequestException(
+    //       'Missing Google credentials in Admin Settings',
+    //     );
+    //   }
 
-      await this.settingsService.validateGDriveIdWithSdk(
-        dto.gDriveId.trim(),
-        settings.clientEmail,
-        settings.privateKey,
-      );
-    }
+    //   await this.settingsService.validateGDriveIdWithSdk(
+    //     dto.gDriveId.trim(),
+    //     settings.clientEmail,
+    //     settings.privateKey,
+    //   );
+    // }
 
-    return await this.interviewRepo.create(
+    await Promise.all([
+      this.validateDriveField(dto.gDriveId, 'gDriveId'),
+      this.validateDriveField(dto.requestDistillation, 'requestDistillation'),
+      this.validateDriveField(dto.requestCoaching, 'requestCoaching'),
+      this.validateDriveField(dto.requestUserStories, 'requestUserStories'),
+    ]);
+
+    const interview = await this.interviewRepo.create(
       {
         ...dto,
         date: new Date(dto.date),
@@ -105,6 +117,17 @@ export class InterviewService implements IInterviewService {
       },
       manager,
     );
+
+    /* Trigger Webhook */
+    // await this.triggerInterviewWebhook(
+    //   dto,
+    //   client,
+    //   project,
+    //   stakeholders,
+    //   user,
+    // );
+
+    return interview;
   }
 
   async update(
@@ -200,21 +223,28 @@ export class InterviewService implements IInterviewService {
       }
     }
 
-    if (dto.gDriveId) {
-      const settings = await this.settingsService.getSingle(manager);
+    // if (dto.gDriveId) {
+    //   const settings = await this.settingsService.getSingle(manager);
 
-      if (!settings.clientEmail || !settings.privateKey) {
-        throw new BadRequestException(
-          'Missing Google credentials in Admin Settings',
-        );
-      }
+    //   if (!settings.clientEmail || !settings.privateKey) {
+    //     throw new BadRequestException(
+    //       'Missing Google credentials in Admin Settings',
+    //     );
+    //   }
 
-      await this.settingsService.validateGDriveIdWithSdk(
-        dto.gDriveId.trim(),
-        settings.clientEmail,
-        settings.privateKey,
-      );
-    }
+    //   await this.settingsService.validateGDriveIdWithSdk(
+    //     dto.gDriveId.trim(),
+    //     settings.clientEmail,
+    //     settings.privateKey,
+    //   );
+    // }
+
+    await Promise.all([
+      this.validateDriveField(dto.gDriveId, 'gDriveId'),
+      this.validateDriveField(dto.requestDistillation, 'requestDistillation'),
+      this.validateDriveField(dto.requestCoaching, 'requestCoaching'),
+      this.validateDriveField(dto.requestUserStories, 'requestUserStories'),
+    ]);
 
     const updatePayload: Partial<Interview> = {
       ...(dto.name && { name: dto.name }),
@@ -312,5 +342,104 @@ export class InterviewService implements IInterviewService {
       currentPage: page,
       totalPages: Math.ceil(total / limit),
     };
+  }
+
+  async validateDriveField(input?: string, fieldName?: string): Promise<void> {
+    const driveId = extractDriveId(input);
+    if (!driveId) return;
+
+    try {
+      const settings = await this.settingsService.getSingle();
+
+      if (!settings.clientEmail || !settings.privateKey) {
+        throw new BadRequestException(
+          'Missing Google credentials in Admin Settings',
+        );
+      }
+
+      await this.settingsService.validateGDriveIdWithSdk(
+        driveId,
+        settings.clientEmail,
+        settings.privateKey,
+      );
+    } catch (err: any) {
+      this.logger.error(err);
+      throw new BadRequestException(
+        `Invalid Google Drive ID in ${fieldName}: ${input}`,
+      );
+    }
+  }
+
+  async triggerInterviewWebhook(
+    dto: CreateInterviewDto,
+    client: Client,
+    project: Project,
+    stakeholders: ClientStakeholder[],
+    user: JwtPayload,
+  ): Promise<void> {
+    const services: string[] = [];
+
+    if (dto.requestDistillation?.trim()) {
+      services.push('Distillation / Summary / Follow-up Email');
+    }
+    if (dto.requestCoaching?.trim()) {
+      services.push('Coaching / Feedback');
+    }
+    if (dto.requestUserStories?.trim()) {
+      services.push('User Stories');
+    }
+
+    if (services.length === 0) return;
+
+    /* Jwt token creation */
+    // const superAdmin = await this.userRepo.findOne({
+    //   where: { role: 'SuperAdmin' },
+    // });
+
+    // if (!superAdmin) {
+    //   this.logger.warn('⚠️ No SuperAdmin found. Cannot assign createdBy.');
+    //   return;
+    // }
+
+    const authPayload = {
+      // email: superAdmin.email,
+      // sub: superAdmin.id,
+      email: user.email,
+      sub: user.id,
+    };
+
+    const access_token = this.jwtService.sign(authPayload);
+    /* Jwt token creation */
+
+    const payload = {
+      answers: {
+        Client: `${client.name} | ${client.clientCode}`,
+        'Project Name': project.name,
+        'Client Team': project.clientTeam,
+        'Interview Name': dto.name,
+        'Client Stakeholders': stakeholders.map((s) => s.name).join(', '),
+        'Date of Interview': dto.date,
+        'Google Drive Transcript ID': dto.gDriveId?.trim() || '',
+        'What service(s) would you like to receive?': services,
+        'Who should we send the output to': user.email,
+      },
+      row: 5, // Replace with dynamic logic if needed
+      user: user.email,
+      access_token,
+    };
+
+    try {
+      await fetch(
+        'https://transparentpartners.app.n8n.cloud/webhook/9ff14226-c654-459f-99fc-92d9d9a706d0',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        },
+      );
+      this.logger.log('Interview webhook triggered successfully', payload);
+    } catch (err) {
+      this.logger.error('Failed to trigger interview webhook', err);
+    }
   }
 }
