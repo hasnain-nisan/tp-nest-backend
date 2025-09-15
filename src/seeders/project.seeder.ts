@@ -63,6 +63,7 @@ export class ProjectSeeder implements OnApplicationBootstrap {
         name: `Project ${i}`,
         clientTeam: `Team ${i}`,
         client: randomClient,
+        description: `Description for Project ${i}`,
         // stakeholders: selectedStakeholders,
         createdBy: superAdmin,
         updatedBy: superAdmin,
