@@ -16,7 +16,7 @@ import { google, drive_v3 } from 'googleapis';
 @Injectable()
 export class AdminSettingsService implements IAdminSettingsService {
   private readonly logger = new Logger(AdminSettingsService.name);
-  private driveClient: drive_v3.Drive | null = null;
+  private readonly driveClient: drive_v3.Drive | null = null;
 
   constructor(private readonly adminSettingsRepo: AdminSettingsRepository) {}
 

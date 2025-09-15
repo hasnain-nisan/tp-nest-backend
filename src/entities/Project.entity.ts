@@ -11,6 +11,8 @@ import {
 import { User } from './User.entity';
 import { Interview } from './DiscoveryInterview.entity';
 import { Client } from './Client.entity';
+import { Config } from './Config.entity';
+// import { ProjectConfig } from './config.entity';
 
 @Entity('project')
 export class Project {
@@ -40,6 +42,9 @@ export class Project {
 
   @OneToMany(() => Interview, (interview) => interview.project)
   interviews: Interview[];
+
+  @OneToMany(() => Config, (config) => config.project)
+  configs: Config[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

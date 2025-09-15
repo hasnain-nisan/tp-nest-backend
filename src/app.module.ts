@@ -20,6 +20,7 @@ import { InterviewModule } from './modules/interview/interview.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { AdminSettingsModule } from './modules/AdminSettings/admin-settings.module';
 import { AdminSettingsSeeder } from './seeders/admin-settings.seeder';
+import { ProjectConfigModule } from './modules/config/config.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { AdminSettingsSeeder } from './seeders/admin-settings.seeder';
     InterviewModule,
     DashboardModule,
     AdminSettingsModule,
+    ProjectConfigModule,
   ],
   controllers: [AppController],
   providers: [
