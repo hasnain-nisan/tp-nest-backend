@@ -119,13 +119,13 @@ export class InterviewService implements IInterviewService {
     );
 
     /* Trigger Webhook */
-    // await this.triggerInterviewWebhook(
-    //   dto,
-    //   client,
-    //   project,
-    //   stakeholders,
-    //   user,
-    // );
+    await this.triggerInterviewWebhook(
+      dto,
+      client,
+      project,
+      stakeholders,
+      user,
+    );
 
     return interview;
   }
@@ -346,6 +346,7 @@ export class InterviewService implements IInterviewService {
 
   async validateDriveField(input?: string, fieldName?: string): Promise<void> {
     const driveId = extractDriveId(input);
+
     if (!driveId) return;
 
     try {
@@ -392,20 +393,20 @@ export class InterviewService implements IInterviewService {
     if (services.length === 0) return;
 
     /* Jwt token creation */
-    // const superAdmin = await this.userRepo.findOne({
-    //   where: { role: 'SuperAdmin' },
-    // });
+    const superAdmin = await this.userRepo.findOne({
+      where: { role: 'SuperAdmin' },
+    });
 
-    // if (!superAdmin) {
-    //   this.logger.warn('⚠️ No SuperAdmin found. Cannot assign createdBy.');
-    //   return;
-    // }
+    if (!superAdmin) {
+      this.logger.warn('⚠️ No SuperAdmin found. Cannot assign createdBy.');
+      return;
+    }
 
     const authPayload = {
-      // email: superAdmin.email,
-      // sub: superAdmin.id,
-      email: user.email,
-      sub: user.id,
+      email: superAdmin.email,
+      sub: superAdmin.id,
+      // email: user.email,
+      // sub: user.id,
     };
 
     const access_token = this.jwtService.sign(authPayload);
