@@ -99,12 +99,12 @@ export class InterviewService implements IInterviewService {
     //   );
     // }
 
-    await Promise.all([
-      this.validateDriveField(dto.gDriveId, 'gDriveId'),
-      this.validateDriveField(dto.requestDistillation, 'requestDistillation'),
-      this.validateDriveField(dto.requestCoaching, 'requestCoaching'),
-      this.validateDriveField(dto.requestUserStories, 'requestUserStories'),
-    ]);
+    // await Promise.all([
+    //   this.validateDriveField(dto.gDriveId, 'gDriveId'),
+    //   this.validateDriveField(dto.requestDistillation, 'requestDistillation'),
+    //   this.validateDriveField(dto.requestCoaching, 'requestCoaching'),
+    //   this.validateDriveField(dto.requestUserStories, 'requestUserStories'),
+    // ]);
 
     const interview = await this.interviewRepo.create(
       {
@@ -422,7 +422,8 @@ export class InterviewService implements IInterviewService {
         'Date of Interview': dto.date,
         'Google Drive Transcript ID': dto.gDriveId?.trim() || '',
         'What service(s) would you like to receive?': services,
-        'Who should we send the output to': user.email,
+        // 'Who should we send the output to': user.email,
+        'Who should we send the output to': 'tanmoyahsan14024@gmail.com',
       },
       row: 5, // Replace with dynamic logic if needed
       user: user.email,
