@@ -266,3 +266,122 @@ Ref: project.created_by > user.id
 Ref: project.updated_by > user.id
 Ref: discovery_interview.created_by > user.id
 Ref: discovery_interview.updated_by > user.id
+
+
+// DBML for your given entities with nullability
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table user {
+  id uuid [primary key]
+  email varchar [unique] // not null
+  password varchar // not null
+  role varchar // enum: SuperAdmin | Admin | InterviewUser, not null
+  access_scopes jsonb [null]
+  created_by uuid [null]
+  updated_by uuid [null]
+  created_at timestamp
+  updated_at timestamp
+  is_deleted boolean // default: false
+}
+
+Table admin_settings {
+  id uuid [primary key]
+  type varchar(50) // not null
+  project_id varchar(255) [null]
+  private_key_id varchar(255) [null]
+  private_key text // not null
+  client_email varchar(255) [unique, not null]
+  client_id varchar(255) [null]
+  auth_uri varchar(500) [null]
+  token_uri varchar(500) [null]
+  auth_provider_x509_cert_url varchar(500) [null]
+  client_x509_cert_url varchar(500) [null]
+  universe_domain varchar(255) [null]
+  created_by uuid [null]
+  updated_by uuid [null]
+  created_at timestamp
+  updated_at timestamp
+  is_deleted boolean // default: false
+}
+
+Table client {
+  id uuid [primary key]
+  name varchar // not null
+  client_code varchar [unique] // not null
+  created_by uuid [null]
+  updated_by uuid [null]
+  created_at timestamp
+  updated_at timestamp
+  is_deleted boolean // default: false
+}
+
+Table client_stakeholder {
+  id uuid [primary key]
+  name varchar // not null
+  email varchar [null]
+  phone varchar [null]
+  client_id uuid // not null
+  created_by uuid [null]
+  updated_by uuid [null]
+  created_at timestamp
+  updated_at timestamp
+  is_deleted boolean // default: false
+}
+
+Table project {
+  id uuid [primary key]
+  name varchar [unique] // not null
+  client_team varchar [null]
+  client_id uuid // not null
+  description text // not null
+  created_by uuid [null]
+  updated_by uuid [null]
+  created_at timestamp
+  updated_at timestamp
+  is_deleted boolean // default: false
+}
+
+Table discovery_interview {
+  id uuid [primary key]
+  name varchar // not null
+  date timestamp // not null
+  gdrive_id varchar [null]
+  request_distillation varchar [null]
+  request_coaching varchar [null]
+  request_user_stories varchar [null]
+  client_id uuid // not null
+  project_id uuid // not null
+  created_by uuid // not null (ManyToOne with no nullable option means it's not nullable)
+  updated_by uuid // not null
+  created_at timestamp
+  updated_at timestamp
+  is_deleted boolean // default: false
+}
+
+Table interview_stakeholders {
+  interview_id uuid [not null]
+  stakeholder_id uuid [not null]
+}
+
+// Relationships
+// One-to-many / Many-to-one relationships
+Ref: client_stakeholder.client_id > client.id
+Ref: project.client_id > client.id
+Ref: discovery_interview.client_id > client.id
+Ref: discovery_interview.project_id > project.id
+Ref: interview_stakeholders.interview_id > discovery_interview.id
+Ref: interview_stakeholders.stakeholder_id > client_stakeholder.id
+
+// Self-references for created_by / updated_by
+Ref: user.created_by > user.id
+Ref: user.updated_by > user.id
+Ref: client.created_by > user.id
+Ref: client.updated_by > user.id
+Ref: client_stakeholder.created_by > user.id
+Ref: client_stakeholder.updated_by > user.id
+Ref: project.created_by > user.id
+Ref: project.updated_by > user.id
+Ref: discovery_interview.created_by > user.id
+Ref: discovery_interview.updated_by > user.id
+Ref: admin_settings.created_by > user.id
+Ref: admin_settings.updated_by > user.id
