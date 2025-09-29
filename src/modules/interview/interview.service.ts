@@ -42,6 +42,8 @@ export class InterviewService implements IInterviewService {
     user: JwtPayload,
     manager?: EntityManager,
   ): Promise<Interview> {
+    // console.log('Creating interview...', dto);
+    
     const client = await this.clientRepo.findOne({
       where: { id: dto.clientId, isDeleted: false },
       relations: ['stakeholders'],
@@ -106,9 +108,16 @@ export class InterviewService implements IInterviewService {
     //   this.validateDriveField(dto.requestUserStories, 'requestUserStories'),
     // ]);
 
+    const {
+      requestDistillation,
+      requestCoaching,
+      requestUserStories,
+      ...rest
+    } = dto;
+    
     const interview = await this.interviewRepo.create(
       {
-        ...dto,
+        ...rest,
         date: new Date(dto.date),
         client: { id: dto.clientId } as Client,
         project: { id: dto.projectId } as Project,
@@ -136,6 +145,7 @@ export class InterviewService implements IInterviewService {
     user: JwtPayload,
     manager?: EntityManager,
   ): Promise<Interview | null> {
+    
     const existingInterview = await this.interviewRepo.findOne(
       {
         where: { id, isDeleted: false },
@@ -241,17 +251,17 @@ export class InterviewService implements IInterviewService {
 
     await Promise.all([
       this.validateDriveField(dto.gDriveId, 'gDriveId'),
-      this.validateDriveField(dto.requestDistillation, 'requestDistillation'),
-      this.validateDriveField(dto.requestCoaching, 'requestCoaching'),
-      this.validateDriveField(dto.requestUserStories, 'requestUserStories'),
+      // this.validateDriveField(dto.requestDistillation, 'requestDistillation'),
+      // this.validateDriveField(dto.requestCoaching, 'requestCoaching'),
+      // this.validateDriveField(dto.requestUserStories, 'requestUserStories'),
     ]);
 
     const updatePayload: Partial<Interview> = {
       ...(dto.name && { name: dto.name }),
       gDriveId: dto.gDriveId?.trim() || '',
-      requestDistillation: dto.requestDistillation?.trim() || '',
-      requestCoaching: dto.requestCoaching?.trim() || '',
-      requestUserStories: dto.requestUserStories?.trim() || '',
+      requestDistillation: dto.requestDistillation || false,
+      requestCoaching: dto.requestCoaching || false,
+      requestUserStories: dto.requestUserStories || false,
       ...(dto.date && { date: new Date(dto.date) }),
       ...(client && { client }),
       ...(project && { project }),
@@ -380,13 +390,13 @@ export class InterviewService implements IInterviewService {
   ): Promise<void> {
     const services: string[] = [];
 
-    if (dto.requestDistillation?.trim()) {
+    if (dto.requestDistillation) {
       services.push('Distillation / Summary / Follow-up Email');
     }
-    if (dto.requestCoaching?.trim()) {
+    if (dto.requestCoaching) {
       services.push('Coaching / Feedback');
     }
-    if (dto.requestUserStories?.trim()) {
+    if (dto.requestUserStories) {
       services.push('User Stories');
     }
 

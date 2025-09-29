@@ -29,13 +29,13 @@ export class Interview {
   gDriveId: string;
 
   @Column({ name: 'request_distillation', nullable: true })
-  requestDistillation: string;
+  requestDistillation: boolean;
 
   @Column({ name: 'request_coaching', nullable: true })
-  requestCoaching: string;
+  requestCoaching: boolean;
 
   @Column({ name: 'request_user_stories', nullable: true })
-  requestUserStories: string;
+  requestUserStories: boolean;
 
   @ManyToOne(() => Client)
   @JoinColumn({ name: 'client_id' })
