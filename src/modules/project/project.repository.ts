@@ -109,7 +109,7 @@ export class ProjectRepository implements IProjectRepository {
       .leftJoinAndSelect('project.client', 'client')
       .leftJoinAndSelect('project.createdBy', 'createdBy')
       .leftJoinAndSelect('project.updatedBy', 'updatedBy')
-      // .leftJoinAndSelect('project.stakeholders', 'stakeholders')
+      .leftJoinAndSelect('project.stakeholders', 'stakeholders')
       .leftJoinAndSelect('project.interviews', 'interviews');
 
     if (filters.name) {

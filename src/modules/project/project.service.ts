@@ -188,7 +188,7 @@ export class ProjectService implements IProjectService {
           'client',
           'createdBy',
           'updatedBy',
-          // 'stakeholders',
+          'stakeholders',
           'interviews',
         ],
       },
