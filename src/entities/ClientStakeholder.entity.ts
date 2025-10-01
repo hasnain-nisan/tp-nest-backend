@@ -30,6 +30,12 @@ export class ClientStakeholder {
   @JoinColumn({ name: 'client_id' })
   client: Client;
 
+  @Column({ name: 'role', nullable: true })
+  role: string;
+
+  @Column({ name: 'team', nullable: true })
+  team: string;
+
   @ManyToOne(() => User)
   @JoinColumn({ name: 'created_by' })
   createdBy: User;

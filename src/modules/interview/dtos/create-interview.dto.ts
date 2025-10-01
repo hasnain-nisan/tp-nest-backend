@@ -7,6 +7,7 @@ import {
   IsArray,
   ArrayMinSize,
   Matches,
+  IsBoolean,
 } from 'class-validator';
 
 export class CreateInterviewDto {
@@ -25,16 +26,16 @@ export class CreateInterviewDto {
   gDriveId?: string;
 
   @IsOptional()
-  @IsString()
-  requestDistillation?: string;
+  @IsBoolean()
+  requestDistillation?: boolean;
 
   @IsOptional()
-  @IsString()
-  requestCoaching?: string;
+  @IsBoolean()
+  requestCoaching?: boolean;
 
   @IsOptional()
-  @IsString()
-  requestUserStories?: string;
+  @IsBoolean()
+  requestUserStories?: boolean;
 
   @IsUUID('4', { message: 'Invalid client ID format' })
   clientId: string;

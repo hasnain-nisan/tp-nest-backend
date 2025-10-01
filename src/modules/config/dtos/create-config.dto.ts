@@ -6,11 +6,13 @@ import {
   IsObject,
   IsUrl,
   ArrayNotEmpty,
+  ValidateIf,
 } from 'class-validator';
 
 export class CreateConfigDto {
+  @ValidateIf((obj) => typeof obj.projectId === 'string' && obj.projectId.trim() !== '')
   @IsUUID('4', { message: 'Invalid project ID format' })
-  projectId: string;
+  projectId?: string;
 
   @IsString()
   @IsOptional()

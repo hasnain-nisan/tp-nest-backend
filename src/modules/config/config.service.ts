@@ -4,7 +4,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
+import { EntityManager, IsNull } from 'typeorm';
 import { JwtPayload } from 'src/common/interfaces/types.interface';
 import { User } from 'src/entities/User.entity';
 import { CreateConfigDto } from './dtos/create-config.dto';
@@ -14,6 +14,8 @@ import { Config } from 'src/entities/Config.entity';
 import { ProjectRepository } from '../project/project.repository';
 import { AdminSettingsService } from '../AdminSettings/admin-settings.service';
 import { ConfigRepository } from './config.repository';
+import { el, is } from 'date-fns/locale';
+import { Project } from 'src/entities/Project.entity';
 
 @Injectable()
 export class ConfigService implements IConfigService {
@@ -70,23 +72,58 @@ export class ConfigService implements IConfigService {
     user: JwtPayload,
     manager?: EntityManager,
   ): Promise<Config> {
-    const project = await this.projectRepo.findOne({
-      where: { id: dto.projectId, isDeleted: false },
-      relations: ['client', 'configs'],
-    });
+    // Determine if it's a global configuration
+    const isGlobal =
+      !dto.projectId || dto.projectId === 'null' || dto.projectId === '';
 
-    if (!project) {
-      throw new NotFoundException(`Project with ID ${dto.projectId} not found`);
+    let project;
+
+    if (!isGlobal) {
+      // 1. Check for Project Existence
+      project = await this.projectRepo.findOne({
+        where: { id: dto.projectId, isDeleted: false },
+        // Select only 'configs' to check for existing configuration more efficiently,
+        // but 'client' is also needed for payload construction later.
+        relations: ['client', 'configs'],
+      });
+
+      if (!project) {
+        throw new NotFoundException(
+          `Project with ID ${dto.projectId} not found`,
+        );
+      }
     }
 
-    if (project.configs.length > 0) {
+    // 2. Check for Existing Configuration (Global or Project-Specific)
+    let existingConfig;
+
+    if (isGlobal) {
+      // Check for existing Global Config
+      existingConfig = await this.configRepo.findOne({
+        where: { projectId: IsNull(), isDeleted: false },
+      });
+    } else {
+      // Check for existing Project Config
+      // If project.configs exists and has length, a config exists.
+      if (project.configs?.length > 0) {
+        existingConfig = project.configs[0]; // Just need to know *a* config exists
+      }
+    }
+
+    if (existingConfig) {
+      this.logger.log(
+        'Config already exists for this project or globally',
+        existingConfig,
+      );
       throw new BadRequestException(
-        `Project with ID ${dto.projectId} already has a config, You can update it instead of creating a new one and it will be versioned automatically`,
+        isGlobal
+          ? 'Global Config already exists. Please update it instead of creating a new one.'
+          : `Project with ID ${dto.projectId} already has a config. You can update it instead of creating a new one and it will be versioned automatically.`,
       );
     }
 
-    // Validate GDrive if needed
-    if (dto.interview_tracker_gdrive_id) {
+    // 3. Google Drive Validation (only if a GDrive ID is provided)
+    /* if (dto.interview_tracker_gdrive_id) {
       const settings = await this.settingsService.getSingle(manager);
       if (!settings.clientEmail || !settings.privateKey) {
         throw new BadRequestException(
@@ -99,16 +136,19 @@ export class ConfigService implements IConfigService {
         settings.clientEmail,
         settings.privateKey,
       );
-    }
+    } */
 
+    // 4. Construct Configuration Payload
     const defaults = this.getDefaultConfigPayload();
 
     const configPayload: Config['config'] = {
       ...defaults,
-      client: project.client.name,
-      client_code: project.client.clientCode,
-      project_name: project.name,
-      project_desc: project.description,
+      // Safely access project and client properties only if not global
+      client: isGlobal ? '' : (project?.client?.name ?? ''),
+      client_code: isGlobal ? '' : (project?.client?.clientCode ?? ''),
+      project_name: isGlobal ? '' : (project?.name ?? ''),
+      project_desc: isGlobal ? '' : (project?.description ?? ''),
+      // Use the nullish coalescing operator (??) for the DTO fields
       categories_flag: dto.categories_flag ?? defaults.categories_flag,
       example1: dto.example1 ?? defaults.example1,
       example2: dto.example2 ?? defaults.example2,
@@ -128,16 +168,19 @@ export class ConfigService implements IConfigService {
       us_categories: dto.us_categories ?? defaults.us_categories,
     };
 
-    return await this.configRepo.create(
-      {
-        projectId: dto.projectId,
-        config: configPayload,
-        created_by: { id: user.id } as User,
-        is_latest: true,
-        version: 1,
-      },
-      manager,
-    );
+    // 5. Create Configuration Entity
+    // Conditionally set the projectId. If isGlobal is true, projectId is implicitly null/undefined
+    // in the database, which is handled by omitting it or passing undefined.
+    // Let's create a single object for the create call to simplify.
+    const configToCreate = {
+      projectId: isGlobal ? undefined : dto.projectId, // Use undefined for implicit NULL
+      config: configPayload,
+      created_by: { id: user.id } as User,
+      is_latest: true,
+      version: 1,
+    };
+
+    return await this.configRepo.create(configToCreate, manager);
   }
 
   async update(
@@ -156,6 +199,9 @@ export class ConfigService implements IConfigService {
 
     if (!existing) {
       throw new NotFoundException(`Config with ID ${id} not found`);
+    }
+    if (existing.projectId === null) {
+      throw new BadRequestException('Cannot update global config');
     }
 
     // Validate GDrive if needed

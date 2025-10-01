@@ -5,6 +5,7 @@ import {
   IsUUID,
   IsDateString,
   IsArray,
+  IsBoolean,
 } from 'class-validator';
 
 export class UpdateInterviewDto {
@@ -25,16 +26,16 @@ export class UpdateInterviewDto {
   gDriveId?: string;
 
   @IsOptional()
-  @IsString()
-  requestDistillation?: string;
+  @IsBoolean()
+  requestDistillation?: boolean;
 
   @IsOptional()
-  @IsString()
-  requestCoaching?: string;
+  @IsBoolean()
+  requestCoaching?: boolean;
 
   @IsOptional()
-  @IsString()
-  requestUserStories?: string;
+  @IsBoolean()
+  requestUserStories?: boolean;
 
   @IsOptional()
   @IsUUID('4', { message: 'Invalid client ID format' })
