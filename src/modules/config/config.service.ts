@@ -189,6 +189,8 @@ export class ConfigService implements IConfigService {
     user: JwtPayload,
     manager?: EntityManager,
   ): Promise<Config | null> {
+    console.log('dto received in service:', dto);
+
     const existing = await this.configRepo.findOne(
       {
         where: { id, isDeleted: false },
@@ -204,21 +206,21 @@ export class ConfigService implements IConfigService {
       throw new BadRequestException('Cannot update global config');
     }
 
-    // Validate GDrive if needed
-    if (dto.interview_tracker_gdrive_id) {
-      const settings = await this.settingsService.getSingle(manager);
-      if (!settings.clientEmail || !settings.privateKey) {
-        throw new BadRequestException(
-          'Missing Google credentials in Admin Settings',
-        );
-      }
+    // --- Validate GDrive if provided ---
+    // if (dto.interview_tracker_gdrive_id) {
+    //   const settings = await this.settingsService.getSingle(manager);
+    //   if (!settings.clientEmail || !settings.privateKey) {
+    //     throw new BadRequestException(
+    //       'Missing Google credentials in Admin Settings',
+    //     );
+    //   }
 
-      await this.settingsService.validateGDriveIdWithSdk(
-        dto.interview_tracker_gdrive_id.trim(),
-        settings.clientEmail,
-        settings.privateKey,
-      );
-    }
+    //   await this.settingsService.validateGDriveIdWithSdk(
+    //     dto.interview_tracker_gdrive_id.trim(),
+    //     settings.clientEmail,
+    //     settings.privateKey,
+    //   );
+    // }
 
     const isProjectChanged =
       dto.projectId && dto.projectId !== existing.projectId;
@@ -251,18 +253,44 @@ export class ConfigService implements IConfigService {
       newVersion = 1;
     }
 
+    // --- Build JSONB payload safely ---
     const newConfigPayload: Config['config'] = {
-      ...existing.config,
-      ...dto,
+      ...existing.config, // preserve all existing values
+
+      // project/client details always refreshed
       client: targetProject.client.name,
       client_code: targetProject.client.clientCode,
       project_name: targetProject.name,
       project_desc: targetProject.description,
+
+      // selective overrides from DTO
+      example1: dto.example1 ?? existing.config.example1,
+      example2: dto.example2 ?? existing.config.example2,
+      example3: dto.example3 ?? existing.config.example3,
+
+      categories_flag: dto.categories_flag ?? existing.config.categories_flag,
+      us_categories: dto.us_categories ?? existing.config.us_categories,
+      custom_context: dto.custom_context ?? existing.config.custom_context,
+
       email_confirmation:
         dto.email_confirmation ?? existing.config.email_confirmation,
-      us_categories: dto.us_categories ?? existing.config.us_categories,
+
+      interview_tracker_gdrive_id:
+        dto.interview_tracker_gdrive_id ??
+        existing.config.interview_tracker_gdrive_id,
+      interview_repository_gdrive_url:
+        dto.interview_repository_gdrive_url ??
+        existing.config.interview_repository_gdrive_url,
+      global_repository_gdrive_url:
+        dto.global_repository_gdrive_url ??
+        existing.config.global_repository_gdrive_url,
+      output_gdrive_url:
+        dto.output_gdrive_url ?? existing.config.output_gdrive_url,
+      logging_output_url:
+        dto.logging_output_url ?? existing.config.logging_output_url,
     };
 
+    // --- Create new config version ---
     const newConfig = await this.configRepo.create(
       {
         projectId: targetProject.id,
