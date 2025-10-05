@@ -1,5 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
+import { EntityManager, In } from 'typeorm';
 import { JwtPayload } from 'src/common/interfaces/types.interface';
 import { User } from 'src/entities/User.entity';
 import { Project } from 'src/entities/Project.entity';
@@ -10,6 +10,7 @@ import { CreateProjectDto } from './dtos/create-project.dto';
 import { UpdateProjectDto } from './dtos/update-project.dto';
 import { IProjectService } from './interfaces/project-service.interface';
 import { ClientStakeholderRepository } from '../clientStakeholder/clientStakeholder.repository';
+import { ClientStakeholder } from 'src/entities/ClientStakeholder.entity';
 
 @Injectable()
 export class ProjectService implements IProjectService {
@@ -28,36 +29,36 @@ export class ProjectService implements IProjectService {
   ): Promise<Project> {
     const client = await this.clientRepo.findOne({
       where: { id: dto.clientId, isDeleted: false },
-      // relations: ['stakeholders'],
+      relations: ['stakeholders'],
     });
 
     if (!client) {
       throw new NotFoundException(`Client with ID ${dto.clientId} not found`);
     }
 
-    // const availableStakeholders = client.stakeholders || [];
+    const availableStakeholders = client.stakeholders || [];
 
-    // const validStakeholderIds = availableStakeholders.map((s) => s.id);
-    // const invalidIds = dto.stakeholderIds.filter(
-    //   (id) => !validStakeholderIds.includes(id),
-    // );
+    const validStakeholderIds = availableStakeholders.map((s) => s.id);
+    const invalidIds = dto.stakeholderIds.filter(
+      (id) => !validStakeholderIds.includes(id),
+    );
 
-    // if (invalidIds.length > 0) {
-    //   throw new NotFoundException(
-    //     `Stakeholders not associated with client: ${invalidIds.join(', ')}`,
-    //   );
-    // }
+    if (invalidIds.length > 0) {
+      throw new NotFoundException(
+        `Stakeholders not associated with client: ${invalidIds.join(', ')}`,
+      );
+    }
 
-    // const stakeholders = await this.stakeholderRepo.findAll(
-    //   { where: { id: In(dto.stakeholderIds), isDeleted: false } },
-    //   manager,
-    // );
+    const stakeholders = await this.stakeholderRepo.findAll(
+      { where: { id: In(dto.stakeholderIds), isDeleted: false } },
+      manager,
+    );
 
     return await this.projectRepo.create(
       {
         ...dto,
         client: { id: dto.clientId } as Client,
-        // stakeholders,
+        stakeholders,
         createdBy: { id: user.id } as User,
       },
       manager,
@@ -75,7 +76,7 @@ export class ProjectService implements IProjectService {
     const existingProject = await this.projectRepo.findOne(
       {
         where: { id, isDeleted: false },
-        relations: ['client'],
+        relations: ['client', 'stakeholders'],
       },
       manager,
     );
@@ -100,47 +101,47 @@ export class ProjectService implements IProjectService {
       }
 
       // Enforce stakeholderIds presence when client changes
-      // if (!dto.stakeholderIds || dto.stakeholderIds.length === 0) {
-      //   throw new NotFoundException(
-      //     `Stakeholders must be provided when changing the client`,
-      //   );
-      // }
+      if (!dto.stakeholderIds || dto.stakeholderIds.length === 0) {
+        throw new NotFoundException(
+          `Stakeholders must be provided when changing the client`,
+        );
+      }
     } else {
       client = existingProject.client;
     }
 
     // Validate stakeholder ownership
-    // let stakeholders: ClientStakeholder[] | undefined;
-    // if (dto.stakeholderIds) {
-    //   if (dto.stakeholderIds.length === 0) {
-    //     throw new NotFoundException(
-    //       `At least one stakeholder must be assigned`,
-    //     );
-    //   }
+    let stakeholders: ClientStakeholder[] | undefined;
+    if (dto.stakeholderIds) {
+      if (dto.stakeholderIds.length === 0) {
+        throw new NotFoundException(
+          `At least one stakeholder must be assigned`,
+        );
+      }
 
-    //   const availableStakeholders = client.stakeholders || [];
-    //   const validIds = availableStakeholders.map((s) => s.id);
-    //   const invalidIds = dto.stakeholderIds.filter(
-    //     (id) => !validIds.includes(id),
-    //   );
+      const availableStakeholders = client.stakeholders || [];
+      const validIds = availableStakeholders.map((s) => s.id);
+      const invalidIds = dto.stakeholderIds.filter(
+        (id) => !validIds.includes(id),
+      );
 
-    //   if (invalidIds.length > 0) {
-    //     throw new NotFoundException(
-    //       `Stakeholders not associated with client: ${invalidIds.join(', ')}`,
-    //     );
-    //   }
+      // if (invalidIds.length > 0) {
+      //   throw new NotFoundException(
+      //     `Stakeholders not associated with client: ${invalidIds.join(', ')}`,
+      //   );
+      // }
 
-    //   stakeholders = await this.stakeholderRepo.findAll(
-    //     { where: { id: In(dto.stakeholderIds), isDeleted: false } },
-    //     manager,
-    //   );
+      stakeholders = await this.stakeholderRepo.findAll(
+        { where: { id: In(dto.stakeholderIds), isDeleted: false } },
+        manager,
+      );
 
-    //   if (stakeholders.length === 0) {
-    //     throw new NotFoundException(
-    //       `No valid stakeholders found for the provided IDs`,
-    //     );
-    //   }
-    // }
+      if (stakeholders.length === 0) {
+        throw new NotFoundException(
+          `No valid stakeholders found for the provided IDs`,
+        );
+      }
+    }
 
     return this.projectRepo.update(
       id,
@@ -148,6 +149,7 @@ export class ProjectService implements IProjectService {
         ...rest,
         ...(clientId && { client: { id: clientId } as Client }),
         ...(description && { description }),
+        ...(stakeholders && { stakeholders }),
         updatedBy: { id: user.id } as User,
       },
       manager,

@@ -25,5 +25,4 @@ export class UpdateClientStakeholderDto {
   @IsString()
   @IsNotEmpty({ message: 'Team must not be empty if provided' })
   team?: string;
-
 }

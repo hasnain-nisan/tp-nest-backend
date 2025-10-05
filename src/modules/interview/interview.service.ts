@@ -43,7 +43,7 @@ export class InterviewService implements IInterviewService {
     manager?: EntityManager,
   ): Promise<Interview> {
     // console.log('Creating interview...', dto);
-    
+
     const client = await this.clientRepo.findOne({
       where: { id: dto.clientId, isDeleted: false },
       relations: ['stakeholders'],
@@ -114,7 +114,7 @@ export class InterviewService implements IInterviewService {
       requestUserStories,
       ...rest
     } = dto;
-    
+
     const interview = await this.interviewRepo.create(
       {
         ...rest,
@@ -145,7 +145,6 @@ export class InterviewService implements IInterviewService {
     user: JwtPayload,
     manager?: EntityManager,
   ): Promise<Interview | null> {
-    
     const existingInterview = await this.interviewRepo.findOne(
       {
         where: { id, isDeleted: false },
