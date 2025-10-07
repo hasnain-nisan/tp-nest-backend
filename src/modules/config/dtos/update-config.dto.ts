@@ -37,12 +37,12 @@ export class UpdateConfigDto {
   @IsOptional()
   custom_context?: string;
 
+  @IsOptional()
   @IsArray()
   @ArrayNotEmpty({
     message: 'email_confirmation must contain at least one email',
   })
   @IsString({ each: true })
-  @IsOptional()
   email_confirmation?: string[];
 
   @IsString()

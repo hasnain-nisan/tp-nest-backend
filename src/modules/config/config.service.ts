@@ -202,9 +202,9 @@ export class ConfigService implements IConfigService {
     if (!existing) {
       throw new NotFoundException(`Config with ID ${id} not found`);
     }
-    if (existing.projectId === null) {
-      throw new BadRequestException('Cannot update global config');
-    }
+    // if (existing.projectId === null) {
+    //   throw new BadRequestException('Cannot update global config');
+    // }
 
     // --- Validate GDrive if provided ---
     // if (dto.interview_tracker_gdrive_id) {
@@ -258,10 +258,11 @@ export class ConfigService implements IConfigService {
       ...existing.config, // preserve all existing values
 
       // project/client details always refreshed
-      client: targetProject.client.name,
-      client_code: targetProject.client.clientCode,
-      project_name: targetProject.name,
-      project_desc: targetProject.description,
+      client: targetProject?.client?.name ?? existing.config.client,
+      client_code:
+        targetProject?.client?.clientCode ?? existing.config.client_code,
+      project_name: targetProject?.name ?? existing.config.project_name,
+      project_desc: targetProject?.description ?? existing.config.project_desc,
 
       // selective overrides from DTO
       example1: dto.example1 ?? existing.config.example1,
@@ -293,7 +294,7 @@ export class ConfigService implements IConfigService {
     // --- Create new config version ---
     const newConfig = await this.configRepo.create(
       {
-        projectId: targetProject.id,
+        projectId: targetProject?.id ?? null,
         config: newConfigPayload,
         version: newVersion,
         is_latest: true,
