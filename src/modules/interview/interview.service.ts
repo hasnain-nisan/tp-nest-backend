@@ -432,7 +432,7 @@ export class InterviewService implements IInterviewService {
         'Google Drive Transcript ID': dto.gDriveId?.trim() || '',
         'What service(s) would you like to receive?': services,
         // 'Who should we send the output to': user.email,
-        'Who should we send the output to': 'tanmoyahsan14024@gmail.com',
+        'Who should we send the output to': 'ahsan.habib@transparent.partners',
       },
       row: 5, // Replace with dynamic logic if needed
       user: user.email,
