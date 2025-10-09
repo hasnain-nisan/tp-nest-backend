@@ -425,6 +425,7 @@ export class InterviewService implements IInterviewService {
       answers: {
         Client: `${client.name} | ${client.clientCode}`,
         'Project Name': project.name,
+        'Project Id': project.id,
         'Client Team': project.clientTeam,
         'Interview Name': dto.name,
         'Client Stakeholders': stakeholders.map((s) => s.name).join(', '),
