@@ -421,6 +421,15 @@ export class InterviewService implements IInterviewService {
     const access_token = this.jwtService.sign(authPayload);
     /* Jwt token creation */
 
+    // email payload
+    const stakeholderEmails = stakeholders
+      .map((stakeholder) => stakeholder.email) // Assuming ClientStakeholder has an 'email' property
+      .filter((email): email is string => !!email); // Filter out any null/undefined emails
+
+    const outputEmails = Array.from(
+      new Set([...[user.email], ...stakeholderEmails]),
+    );
+
     const payload = {
       answers: {
         Client: `${client.name} | ${client.clientCode}`,
@@ -433,7 +442,7 @@ export class InterviewService implements IInterviewService {
         'Google Drive Transcript ID': dto.gDriveId?.trim() || '',
         'What service(s) would you like to receive?': services,
         // 'Who should we send the output to': user.email,
-        'Who should we send the output to': 'ahsan.habib@transparent.partners',
+        'Who should we send the output to': outputEmails,
       },
       row: 5, // Replace with dynamic logic if needed
       user: user.email,

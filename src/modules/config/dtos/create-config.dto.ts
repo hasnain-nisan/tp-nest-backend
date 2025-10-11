@@ -49,6 +49,7 @@ export class CreateConfigDto {
   email_confirmation?: string[];
 
   @IsString()
+  @IsOptional()
   interview_tracker_gdrive_id: string;
 
   @IsUrl()
@@ -60,7 +61,7 @@ export class CreateConfigDto {
   global_repository_gdrive_url?: string;
 
   @IsUrl()
-  @IsOptional()
+  // @IsOptional()
   output_gdrive_url?: string;
 
   @IsUrl()
