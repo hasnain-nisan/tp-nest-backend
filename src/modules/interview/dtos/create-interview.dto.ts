@@ -8,6 +8,7 @@ import {
   ArrayMinSize,
   Matches,
   IsBoolean,
+  IsEmail,
 } from 'class-validator';
 
 export class CreateInterviewDto {
@@ -50,4 +51,18 @@ export class CreateInterviewDto {
     message: 'Each stakeholder ID must be a valid UUID',
   })
   stakeholderIds: string[];
+
+  @IsOptional()
+  @IsArray({ message: 'Output emails must be an array' })
+  // @ArrayMinSize(1, {
+  //   message: 'Output emails must contain at least one recipient',
+  // })
+  // @IsEmail(
+  //   {},
+  //   {
+  //     each: true,
+  //     message: 'Each output email must be a valid email address',
+  //   },
+  // )
+  outputEmails?: string[];
 }

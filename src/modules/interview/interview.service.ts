@@ -422,12 +422,8 @@ export class InterviewService implements IInterviewService {
     /* Jwt token creation */
 
     // email payload
-    const stakeholderEmails = stakeholders
-      .map((stakeholder) => stakeholder.email) // Assuming ClientStakeholder has an 'email' property
-      .filter((email): email is string => !!email); // Filter out any null/undefined emails
-
     const outputEmails = Array.from(
-      new Set([...[user.email], ...stakeholderEmails]),
+      new Set([user.email, ...(dto.outputEmails || [])]),
     );
 
     const payload = {
