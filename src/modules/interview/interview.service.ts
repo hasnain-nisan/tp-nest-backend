@@ -123,6 +123,9 @@ export class InterviewService implements IInterviewService {
         project: { id: dto.projectId } as Project,
         stakeholders,
         createdBy: { id: user.id } as User,
+        requestDistillation,
+        requestCoaching,
+        requestUserStories,
       },
       manager,
     );
