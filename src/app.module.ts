@@ -46,12 +46,12 @@ import { ProjectConfigModule } from './modules/config/config.module';
   controllers: [AppController],
   providers: [
     AppService,
-    SuperAdminUserSeeder,
-    AdminUsersSeeder,
-    ClientSeeder,
-    ClientStakeholderSeeder,
-    ProjectSeeder,
-    AdminSettingsSeeder,
+    // SuperAdminUserSeeder,
+    // AdminUsersSeeder,
+    // ClientSeeder,
+    // ClientStakeholderSeeder,
+    // ProjectSeeder,
+    // AdminSettingsSeeder,
     {
       provide: APP_INTERCEPTOR,
       useClass: TransactionInterceptor,
