@@ -17,7 +17,7 @@ export class Config {
   id: string;
 
   // project relation start
-  @Column({ type: 'uuid', name: 'project_id' })
+  @Column({ type: 'uuid', name: 'project_id', nullable: true })
   projectId: string;
 
   @ManyToOne(() => Project, (project) => project.configs, {

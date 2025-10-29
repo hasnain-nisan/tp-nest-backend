@@ -37,12 +37,12 @@ export class UpdateConfigDto {
   @IsOptional()
   custom_context?: string;
 
+  @IsOptional()
   @IsArray()
   @ArrayNotEmpty({
     message: 'email_confirmation must contain at least one email',
   })
   @IsString({ each: true })
-  @IsOptional()
   email_confirmation?: string[];
 
   @IsString()
@@ -68,4 +68,20 @@ export class UpdateConfigDto {
   @IsString()
   @IsOptional()
   change_summary?: string;
+
+  @IsString()
+  @IsOptional()
+  client?: string;
+
+  @IsString()
+  @IsOptional()
+  client_code?: string;
+
+  @IsString()
+  @IsOptional()
+  project_desc?: string;
+
+  @IsString()
+  @IsOptional()
+  project_name?: string;
 }

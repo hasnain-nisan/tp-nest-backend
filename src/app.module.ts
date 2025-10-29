@@ -21,6 +21,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { AdminSettingsModule } from './modules/AdminSettings/admin-settings.module';
 import { AdminSettingsSeeder } from './seeders/admin-settings.seeder';
 import { ProjectConfigModule } from './modules/config/config.module';
+import { BulkUploadModule } from './modules/bulkUpload/bulk-upload.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ProjectConfigModule } from './modules/config/config.module';
     DashboardModule,
     AdminSettingsModule,
     ProjectConfigModule,
+    BulkUploadModule,
   ],
   controllers: [AppController],
   providers: [

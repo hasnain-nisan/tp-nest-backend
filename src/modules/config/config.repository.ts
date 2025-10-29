@@ -86,7 +86,7 @@ export class ConfigRepository implements IConfigRepository {
     page: number,
     limit: number,
     filters: {
-      projectId?: string;
+      projectId?: string | null;
       version?: number;
       is_latest?: boolean;
       created_by?: string;
@@ -103,8 +103,15 @@ export class ConfigRepository implements IConfigRepository {
       .leftJoinAndSelect('config.created_by', 'created_by')
       .leftJoinAndSelect('config.updated_by', 'updated_by');
 
-    if (filters.projectId) {
-      qb.andWhere('project.id = :projectId', { projectId: filters.projectId });
+    // ✅ handle projectId filter safely
+    if (filters.projectId !== undefined) {
+      if (filters.projectId === null || filters.projectId === 'null') {
+        qb.andWhere('config.projectId IS NULL');
+      } else {
+        qb.andWhere('project.id = :projectId', {
+          projectId: filters.projectId,
+        });
+      }
     }
 
     if (filters.version !== undefined) {

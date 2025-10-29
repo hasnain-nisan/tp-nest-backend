@@ -6,11 +6,15 @@ import {
   IsObject,
   IsUrl,
   ArrayNotEmpty,
+  ValidateIf,
 } from 'class-validator';
 
 export class CreateConfigDto {
+  @ValidateIf(
+    (obj) => typeof obj.projectId === 'string' && obj.projectId.trim() !== '',
+  )
   @IsUUID('4', { message: 'Invalid project ID format' })
-  projectId: string;
+  projectId?: string;
 
   @IsString()
   @IsOptional()
@@ -45,6 +49,7 @@ export class CreateConfigDto {
   email_confirmation?: string[];
 
   @IsString()
+  @IsOptional()
   interview_tracker_gdrive_id: string;
 
   @IsUrl()
@@ -56,7 +61,7 @@ export class CreateConfigDto {
   global_repository_gdrive_url?: string;
 
   @IsUrl()
-  @IsOptional()
+  // @IsOptional()
   output_gdrive_url?: string;
 
   @IsUrl()

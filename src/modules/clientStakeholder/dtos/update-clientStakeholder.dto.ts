@@ -15,4 +15,14 @@ export class UpdateClientStakeholderDto {
   @IsString()
   @IsNotEmpty({ message: 'Phone must not be empty if provided' })
   phone?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty({ message: 'Role must not be empty if provided' })
+  role?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty({ message: 'Team must not be empty if provided' })
+  team?: string;
 }

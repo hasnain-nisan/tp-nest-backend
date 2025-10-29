@@ -9,7 +9,7 @@ export interface IConfigRepository extends IRepository<Config> {
     page: number,
     limit: number,
     filters: {
-      projectId?: string;
+      projectId?: string | null;
       version?: number;
       is_latest?: boolean;
       created_by?: string;
